@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\User\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -74,9 +75,11 @@ class UserController extends Controller
                 ->store('profiles', 'public');
         }
 
+        $defaultRole = Role::where('role', 'user')->firstOrFail();
+
         $user = User::create([
             'name' => $validated['name'],
-            'role_id' => 2,
+            'role_id' => $defaultRole->id,
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'phone' => $validated['phone'] ?? null,
