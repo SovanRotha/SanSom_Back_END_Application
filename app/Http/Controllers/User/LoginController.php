@@ -38,11 +38,11 @@ class LoginController extends Controller
         }
 
         // Check account status
-        if ($user->status !== 'active') {
-            return response()->json([
-                'message' => 'Your account is not active'
-            ], 403);
-        }
+        // if ($user->status !== 'active') {
+        //     return response()->json([
+        //         'message' => 'Your account is not active'
+        //     ], 403);
+        // }
 
         // Create Sanctum token
         $token = $user->createToken('sanSom-token')->plainTextToken;
@@ -65,7 +65,6 @@ class LoginController extends Controller
                 'profile' => $user->profile,
                 'currency' => $user->currency,
                 'status' => $user->status,
-                'role' => $user->role->name,
                 'last_login_at' => $user->last_login_at,
             ],
         ]);
