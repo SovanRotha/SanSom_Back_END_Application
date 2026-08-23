@@ -18,7 +18,7 @@ class AccountType extends Model
     /**
      * An account type can have many accounts.
      */
-    public function accounts(): HasMany
+    public function account(): HasMany
     {
         return $this->hasMany(Account::class);
     }
