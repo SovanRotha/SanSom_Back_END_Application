@@ -40,7 +40,7 @@ class TransactionController extends Controller
             // 'user_id' => 'required|exists:users,id',
             'account_id' => 'required|exists:accounts,id',
             'category_id' => 'required|exists:categories,id',
-            'type' => 'required|in:income, expense, transfer',
+            'type' => 'required|in:income, expense',
             'amount' => 'required|numeric|min:0',
             'description' => 'nullable|string',
             'transaction_date' => 'required|date',
@@ -104,12 +104,12 @@ class TransactionController extends Controller
                 ], 422);
             }
 
-             if ($validated['type'] === 'transfer') {
+            //  if ($validated['type'] === 'transfer') {
 
-            return response()->json([
-                'message' => 'Use the transfer endpoint to create a transfer'
-            ], 422);
-        }
+            // return response()->json([
+            //     'message' => 'Use the transfer endpoint to create a transfer'
+            // ], 422);
+        // }
 
         $transaction = DB::transaction(function() use($user, $account, $validated, $id)
         {
@@ -147,7 +147,139 @@ class TransactionController extends Controller
         
     }
 
-    
+    public function destory(Request $request, $id)
+    {   
+        $user = $request->user();
+
+        $transaction = Transaction::where('id', $id)->where('user_id', $id)->first();
+
+          if (!$transaction) {
+            return response()->json([
+                'message' => 'Transaction not found'
+            ], 404);
+        }
+
+        DB::transaction(function() use($transaction){
+            if($transaction->type === 'income')
+                {
+                    $transaction->account->decrement(
+                        'balance', $transaction->amount
+                    );
+                }
+            elseif ($transaction->type === 'expense')
+                {
+                    $transaction->account->increment(
+                        'balance', $transaction->amount
+                    );
+                }
+            
+        });
+
+        $transaction->delete();
+
+        return response()->json(
+            [
+                'Message' => 'Transaction deleted Successfully !'
+            ]
+        );
+
+    }
+
+    public function update(Request $request, $id)
+    {
+        $user = $request->user();
+
+        $transaction = Transaction::where('id', $id)->where('user_id', $user)->first();
+
+        $validated = $request->validate([
+            'account_id' => 'required|exists:accounts, id',
+            'category_id' => 'required|exists:categories, id',
+            'type' => 'required|in:income,expense',
+            'amount' => 'required|numeric|min:0', 
+            'description' => 'nullable|string|max:255',
+            'transaction_date' => 'required|date',
+            'notes' => 'nullable|string',
+        ]);
+
+        $newAccount = Account::where('id', $validated['account_id'])->where('user_id', $user->id)->where('status', 'active')->first();
+
+        if (!$newAccount) {
+            return response()->json([
+                'message' => 'Account not found'
+            ], 404);
+        }
+
+        if ($validated['category_id']) {
+
+            $category = Category::where('id', $validated['category_id'])
+                ->where('status', 'active')
+                ->where(function ($query) use ($user) {
+                    $query->where('is_system', true)
+                          ->orWhere('user_id', $user->id);
+                })
+                ->first();
+
+            if (!$category) {
+                return response()->json([
+                    'message' => 'Category not found'
+                ], 404);
+            }
+
+            if ($category->type !== $validated['type']) {
+                return response()->json([
+                    'message' => 'Category type does not match transaction type'
+                ], 422);
+            }
+        }
+
+        DB::transaction(function() use ($transaction, $newAccount, $validated){
+            if ($transaction->type === 'income') {
+
+                $transaction->account->decrement(
+                    'balance',
+                    $transaction->amount
+                );
+
+            } elseif ($transaction->type === 'expense') {
+
+                $transaction->account->increment(
+                    'balance',
+                    $transaction->amount
+                );
+            }
+
+            $transaction->update([
+                'account_id' => $validated['account_id'],
+                'category_id' => $validated['category_id'] ?? null,
+                'type' => $validated['type'],
+                'amount' => $validated['amount'],
+                'description' => $validated['description'] ?? null,
+                'transaction_date' => $validated['transaction_date'],
+                'notes' => $validated['notes'] ?? null,
+            ]);
+           if ($validated['type'] === 'income') {
+
+                $newAccount->increment(
+                    'balance',
+                    $validated['amount']
+                );
+
+            } else {
+
+                $newAccount->decrement(
+                    'balance',
+                    $validated['amount']
+                );
+            }
+
+        });
+
+        return response()->json([
+            'Message' => 'Transaction updated Successfully',
+            'transaction' => $transaction->fresh(),
+        ]);
+
+    }
 
     
 
