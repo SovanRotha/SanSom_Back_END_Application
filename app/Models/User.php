@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Models\Budget\Budget;
 use App\Models\Category\Category;
 use App\Models\Category\Transaction;
+use App\Models\Saving\SavingGoal;
 use App\Models\User\Role;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -73,5 +74,10 @@ class User extends Authenticatable
     public function budget()
     {
         return $this->hasMany(Budget::class);
+    }
+
+    public function savingGoal()
+    {
+        return $this->hasMany(SavingGoal::class);
     }
 }
