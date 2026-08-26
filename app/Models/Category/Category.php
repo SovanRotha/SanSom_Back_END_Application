@@ -2,6 +2,7 @@
 
 namespace App\Models\Category;
 
+use App\Models\Bill\Bill;
 use App\Models\Budget\BudgetCategory;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -44,5 +45,10 @@ class Category extends Model
     public function budgetCategory()
     {
         return $this->hasMany(BudgetCategory::class);
+    }
+
+    public function bill()
+    {
+        return $this->hasMany(Bill::class);
     }
 }

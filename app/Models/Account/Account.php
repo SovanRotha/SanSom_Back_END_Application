@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Bill\Bill;
 use App\Models\Category\Transaction;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -46,5 +47,10 @@ class Account extends Model
     public function transaction()
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function bill()
+    {
+        return $this->hasMany(Bill::class);
     }
 }

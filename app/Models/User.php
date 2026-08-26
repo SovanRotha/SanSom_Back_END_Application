@@ -4,6 +4,8 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Models\Bill\Bill;
+use App\Models\Bill\RecurringTransaction;
 use App\Models\Budget\Budget;
 use App\Models\Category\Category;
 use App\Models\Category\Transaction;
@@ -79,5 +81,15 @@ class User extends Authenticatable
     public function savingGoal()
     {
         return $this->hasMany(SavingGoal::class);
+    }
+
+    public function recurringTransaction()
+    {
+        return $this->hasMany(RecurringTransaction::class);
+    }
+
+    public function bill()
+    {
+        return $this->hasMany(Bill::class);
     }
 }

@@ -78,7 +78,7 @@ class AccountType extends Controller
     }
 
     // Delete account type
-    public function delete($id)
+    public function destroy($id)
     {
         $accountType = ModelsAccountType::find($id);
 

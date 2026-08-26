@@ -147,7 +147,7 @@ class TransactionController extends Controller
         
     }
 
-    public function destory(Request $request, $id)
+    public function destroy(Request $request, $id)
     {   
         $user = $request->user();
 
