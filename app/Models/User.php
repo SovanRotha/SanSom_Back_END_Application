@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Models\Budget\Budget;
 use App\Models\Category\Category;
 use App\Models\Category\Transaction;
 use App\Models\User\Role;
@@ -67,5 +68,10 @@ class User extends Authenticatable
     public function transaction()
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function budget()
+    {
+        return $this->hasMany(Budget::class);
     }
 }

@@ -29,12 +29,6 @@ return new class extends Migration
             // File size in bytes
             $table->unsignedBigInteger('file_size');
 
-            $table->timestamp('created_at');
-            
-            $table->timestamp('updated_at');
-
-            $table->timestamps();
-
             $table->timestamps();
         });
     }
