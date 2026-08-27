@@ -31,4 +31,14 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'openai' => [
+        'api_key' => env('OPENAI_API_KEY'),
+        'model' => env('OPENAI_MODEL', 'openai/gpt-4o-mini'),
+        'base_uri' => env('OPENAI_BASE_URI', 'api.openai.com/v1'),
+        'http_referer' => env('OPENROUTER_HTTP_REFERER'),
+        'app_title' => env('OPENROUTER_APP_TITLE'),
+        'ca_bundle' => env('OPENAI_CA_BUNDLE'),
+
+    ],
+
 ];

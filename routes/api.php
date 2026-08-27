@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Account\AccountController;
 use App\Http\Controllers\Account\AccountType;
+use App\Http\Controllers\AI\AIConversationController;
+use App\Http\Controllers\AI\AITestController;
 use App\Http\Controllers\Bill\BillController;
 use App\Http\Controllers\Bill\RecurringTransactionController;
 use App\Http\Controllers\Bill\SubscriptionController;
@@ -10,6 +12,7 @@ use App\Http\Controllers\Budget\BudgetController;
 use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Category\TransactionAttachmentController;
 use App\Http\Controllers\Category\TransactionController;
+use App\Http\Controllers\Notification\NotificationController;
 use App\Http\Controllers\Saving\SavingContributionController;
 use App\Http\Controllers\Saving\SavingGoalController;
 use App\Http\Controllers\User\LoginController;
@@ -117,4 +120,18 @@ Route::post('/contributions', [SavingContributionController::class, 'store']);
 Route::put('/contributions/{id}', [SavingContributionController::class, 'update']);
 Route::delete('/contributions/{id}', [SavingContributionController::class, 'destroy']);
 
+Route::get('/notifications', [NotificationController::class, 'index']);
+Route::get('/unread', [NotificationController::class, 'unread']);
+Route::get('/notifications/{id}', [NotificationController::class, 'show']);
+Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
+Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']);
+Route::delete('/notifications', [NotificationController::class, 'destroyAll']);
 
+// have to do service to alert the message into the notification 
+// NotificationService
+
+Route::get('/ai/test', [AITestController::class, 'test']);
+
+Route::post('/conversations', [AIConversationController::class, 'createConversation']);
+Route::post('/conversation/{id}/messages', [AIConversationController::class, 'sendMessage']);
