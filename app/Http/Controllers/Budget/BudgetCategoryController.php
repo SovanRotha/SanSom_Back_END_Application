@@ -8,6 +8,7 @@ use App\Models\Budget\Budget as ModelsBudget;
 use App\Models\Budget\BudgetCategory as BudgetBudgetCategory;
 use App\Models\BudgetCategory;
 use App\Models\Category;
+use App\Models\Category\Category as ModelsCategory;
 use Illuminate\Http\Request;
 
 class BudgetCategoryController extends Controller
@@ -101,7 +102,7 @@ class BudgetCategoryController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $category = BudgetBudgetCategory::where('id', $validated['category_id'])
+        $category = ModelsCategory::where('id', $validated['category_id'])
             ->where('status', 'active')
             ->where(function ($query) use ($user) {
                 $query->where('is_system', true)
@@ -138,6 +139,7 @@ class BudgetCategoryController extends Controller
         | Create budget category
         |--------------------------------------------------------------------------
         */
+
 
         $budgetCategory = BudgetBudgetCategory::create([
             'budget_id' => $budget->id,
