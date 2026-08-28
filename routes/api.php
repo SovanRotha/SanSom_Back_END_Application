@@ -113,6 +113,7 @@ Route::get('/goals/{id}', [SavingGoalController::class, 'show']);
 Route::post('/goals', [SavingGoalController::class, 'store']);
 Route::put('/goals/{id}', [SavingGoalController::class, 'update']);
 Route::delete('/goals/{id}', [SavingGoalController::class, 'destroy']);
+Route::post('/goals/{id}/add-money', [SavingGoalController::class, 'addMoney']);
 
 Route::get('/contributions', [SavingContributionController::class, 'index']);
 Route::get('/contributions/{id}', [SavingContributionController::class, 'show']);

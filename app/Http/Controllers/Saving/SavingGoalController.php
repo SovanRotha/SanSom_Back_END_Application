@@ -4,13 +4,16 @@ namespace App\Http\Controllers\Saving;
 
 use App\Http\Controllers\Controller;
 use App\Models\Saving\SavingGoal;
+use App\Services\Notification\Notification\SavingNotificationService;
 use Illuminate\Http\Request;
 
 class SavingGoalController extends Controller
 {
     //
 
-     public function index(Request $request)
+    public function __construct(protected SavingNotificationService $savingNotificationService) {}
+
+    public function index(Request $request)
     {
         $user = $request->user();
 
@@ -95,7 +98,7 @@ class SavingGoalController extends Controller
             'auto_allocate' => $validated['auto_allocate'] ?? false,
 
             'allocation_percentage' =>
-                $validated['allocation_percentage'] ?? null,
+            $validated['allocation_percentage'] ?? null,
 
             'status' => $validated['status'] ?? 'active',
         ]);
@@ -104,8 +107,6 @@ class SavingGoalController extends Controller
             'message' => 'Savings goal created successfully',
             'savings_goal' => $goal
         ], 201);
-
-
     }
 
     public function update(Request $request, $id)
@@ -187,4 +188,54 @@ class SavingGoalController extends Controller
         ]);
     }
 
+    public function addMoney(Request $request, $id)
+    {
+        $user = $request->user();
+
+        $goal = SavingGoal::where('id', $id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (!$goal) {
+            return response()->json([
+                'message' => 'Savings goal not found'
+            ], 404);
+        }
+
+        if ($goal->status !== 'active') {
+            return response()->json([
+                'message' => 'Savings goal is not active'
+            ], 422);
+        }
+
+        $validated = $request->validate([
+            'amount' => 'required|numeric|min:0.01',
+        ]);
+
+        // Save previous amount
+        $previousAmount = (float) $goal->current_amount;
+
+        // Add money
+        $goal->current_amount += $validated['amount'];
+
+        // Check if completed
+        if ($goal->current_amount >= $goal->target_amount) {
+            $goal->current_amount = $goal->target_amount;
+            $goal->status = 'completed';
+        }
+
+        $goal->save();
+
+        // Check saving milestones
+        $this->savingNotificationService->checkSaving(
+            $goal,
+            $previousAmount,
+            (float) $goal->current_amount
+        );
+
+        return response()->json([
+            'message' => 'Money added to savings goal successfully',
+            'savings_goal' => $goal->fresh()
+        ]);
+    }
 }
