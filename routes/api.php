@@ -41,7 +41,7 @@ Route::apiResource('roles', RoleController::class);
 
 Route::get('/users', [UserController::class, 'index']);
 Route::get('/user/{id}', [UserController::class, 'show']);
-Route::put('/users/{id}', [ UserController::class, 'update']);
+Route::put('/users/{id}', [UserController::class, 'update']);
 Route::delete('/users/{i,d}', [UserController::class, 'destroy']);
 
 
@@ -90,11 +90,14 @@ Route::post('/budgetCategories', [BudgetCategoryController::class, 'store']);
 Route::put('/budgetCategories/{id}', [BudgetCategoryController::class, 'update']);
 Route::delete('/budgetCategories/{id}', [BudgetCategoryController::class, 'destroy']);
 
-Route::get('/categories', [CategoryController::class, 'index']);
-Route::get('/categories/{id}', [CategoryController::class, 'show']);
-Route::post('/categories', [CategoryController::class, 'store']);
-Route::put('/categories/{id}', [CategoryController::class, 'update']);
-Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/categories', [CategoryController::class, 'index']);
+    Route::get('/categories/{id}', [CategoryController::class, 'show']);
+    Route::post('/categories', [CategoryController::class, 'store']);
+    Route::put('/categories/{id}', [CategoryController::class, 'update']);
+    Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
+});
+
 
 Route::get('/transactions', [TransactionController::class, 'index']);
 Route::get('/transactions/{id}', [TransactionController::class, 'show']);

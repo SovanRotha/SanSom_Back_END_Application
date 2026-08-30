@@ -45,4 +45,51 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+    public function render($request, Throwable $e)
+    {
+        if ($request->expectsJson() || $request->is('api/*') || $request->is('api')) {
+            if ($e instanceof \Illuminate\Validation\ValidationException) {
+                return response()->json([
+                    'message' => 'Validation failed',
+                    'errors' => $e->errors(),
+                ], 422);
+            }
+
+            if ($e instanceof \Illuminate\Auth\AuthenticationException) {
+                return response()->json([
+                    'message' => 'Unauthenticated',
+                ], 401);
+            }
+
+            if ($e instanceof \Illuminate\Database\Eloquent\ModelNotFoundException || $e instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException) {
+                return response()->json([
+                    'message' => 'Resource not found',
+                ], 404);
+            }
+
+            if ($e instanceof \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException) {
+                return response()->json([
+                    'message' => 'Forbidden',
+                ], 403);
+            }
+
+            if ($e instanceof \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException) {
+                return response()->json([
+                    'message' => 'Method not allowed',
+                ], 405);
+            }
+
+            if ($e instanceof \Illuminate\Http\Exceptions\HttpResponseException) {
+                return $e->getResponse();
+            }
+
+            return response()->json([
+                'message' => 'Something went wrong',
+                'error' => config('app.debug') ? $e->getMessage() : 'Internal Server Error',
+            ], 500);
+        }
+
+        return parent::render($request, $e);
+    }
 }
