@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Account;
 
 use App\Http\Controllers\Controller;
 use App\Models\Account;
+use App\Models\Account\Account as ModelsAccount;
 use App\Models\Account\AccountType;
 use Illuminate\Http\Request;
 
@@ -22,7 +23,7 @@ class AccountController extends Controller
             ], 401);
         }
 
-        $accounts = Account::where('user_id', $user->id)
+        $accounts = ModelsAccount::where('user_id', $user->id)
             ->where('status', 'active')
             ->with('accountType')
             ->get();
@@ -47,7 +48,7 @@ class AccountController extends Controller
             ], 401);
         }
 
-        $account = Account::where('id', $id)
+        $account = ModelsAccount::where('id', $id)
             ->where('user_id', $user->id)
             ->with('accountType')
             ->first();
@@ -107,7 +108,7 @@ class AccountController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $account = Account::create([
+        $account = ModelsAccount::create([
             'user_id' => $user->id,
             'account_type_id' => $validated['account_type_id'],
             'name' => $validated['name'],
@@ -138,7 +139,7 @@ class AccountController extends Controller
             ], 401);
         }
 
-        $account = Account::where('id', $id)
+        $account = ModelsAccount::where('id', $id)
             ->where('user_id', $user->id)
             ->first();
 
@@ -179,7 +180,7 @@ class AccountController extends Controller
             ], 401);
         }
 
-        $account = Account::where('id', $id)
+        $account = ModelsAccount::where('id', $id)
             ->where('user_id', $user->id)
             ->first();
 
