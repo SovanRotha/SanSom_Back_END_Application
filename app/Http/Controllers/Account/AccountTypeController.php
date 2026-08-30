@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\AccountController;
 
 use App\Http\Controllers\Controller;
-use App\Models\AccountType as ModelsAccountType;
+use App\Models\Account\AccountType as AccountAccountType;
 use Illuminate\Http\Request;
 
 class AccountType extends Controller
@@ -12,7 +12,7 @@ class AccountType extends Controller
 
     public function index()
     {
-        $accountType = ModelsAccountType::with('account')->get();
+        $accountType = AccountAccountType::with('account')->get();
 
         return response()->json([
             'message' => 'Account Types Retrieved Successfully',
@@ -23,7 +23,7 @@ class AccountType extends Controller
     // Get one account type
     public function show($id)
     {
-        $accountType = ModelsAccountType::with('account')->find($id);
+        $accountType = AccountAccountType::with('account')->find($id);
 
         if (!$accountType) {
             return response()->json([
@@ -45,7 +45,7 @@ class AccountType extends Controller
             'icon' => 'nullable|string|max:255',
         ]);
 
-        $accountType = ModelsAccountType::create($validated);
+        $accountType = AccountAccountType::create($validated);
 
         return response()->json([
             'message' => 'Account Type Created Successfully',
@@ -56,7 +56,7 @@ class AccountType extends Controller
     // Update account type
     public function update(Request $request, $id)
     {
-        $accountType = ModelsAccountType::find($id);
+        $accountType = AccountAccountType::find($id);
 
         if (!$accountType) {
             return response()->json([
@@ -80,7 +80,7 @@ class AccountType extends Controller
     // Delete account type
     public function destroy($id)
     {
-        $accountType = ModelsAccountType::find($id);
+        $accountType = AccountAccountType::find($id);
 
         if (!$accountType) {
             return response()->json([

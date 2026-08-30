@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Account;
 
 use App\Http\Controllers\Controller;
 use App\Models\Account;
-use App\Models\AccountType;
+use App\Models\Account\AccountType;
 use Illuminate\Http\Request;
 
 class AccountController extends Controller
@@ -15,6 +15,12 @@ class AccountController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthenticated'
+            ], 401);
+        }
 
         $accounts = Account::where('user_id', $user->id)
             ->where('status', 'active')
@@ -34,6 +40,12 @@ class AccountController extends Controller
     public function show(Request $request, $id)
     {
         $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthenticated'
+            ], 401);
+        }
 
         $account = Account::where('id', $id)
             ->where('user_id', $user->id)
@@ -59,6 +71,12 @@ class AccountController extends Controller
     public function store(Request $request)
     {
         $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthenticated'
+            ], 401);
+        }
 
         $validated = $request->validate([
             'account_type_id' => 'required|exists:account_types,id',
@@ -114,6 +132,12 @@ class AccountController extends Controller
     {
         $user = $request->user();
 
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthenticated'
+            ], 401);
+        }
+
         $account = Account::where('id', $id)
             ->where('user_id', $user->id)
             ->first();
@@ -149,6 +173,12 @@ class AccountController extends Controller
     {
         $user = $request->user();
 
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthenticated'
+            ], 401);
+        }
+
         $account = Account::where('id', $id)
             ->where('user_id', $user->id)
             ->first();
@@ -165,7 +195,7 @@ class AccountController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        if ($account->transactions()->exists()) {
+        if ($account->transaction()->exists()) {
             return response()->json([
                 'message' => 'Cannot delete account because it has transactions'
             ], 422);
