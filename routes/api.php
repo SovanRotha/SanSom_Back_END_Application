@@ -49,11 +49,11 @@ Route::delete('/users/{id}', [UserController::class, 'destroy']);
 Route::post('/register', [UserController::class, 'store']);
 Route::post('/login', [LoginController::class, 'login']);
 
-Route::get('/accountTypes', [AccountType::class, 'index']);
-Route::get('/accountTypes/{id}', [AccountType::class, 'show']);
-Route::post('/accountTypes', [AccountType::class, 'store']);
-Route::put('/accountTypes/{id}', [AccountType::class, 'update']);
-Route::delete('/accountTypes/{id}', [AccountType::class, 'destroy']);
+Route::get('/accountTypes', [AccountTypeController::class, 'index']);
+Route::get('/accountTypes/{id}', [AccountTypeController::class, 'show']);
+Route::post('/accountTypes', [AccountTypeController::class, 'store']);
+Route::put('/accountTypes/{id}', [AccountTypeController::class, 'update']);
+Route::delete('/accountTypes/{id}', [AccountTypeController::class, 'destroy']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/accounts', [AccountController::class, 'index']);
@@ -61,12 +61,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/accounts', [AccountController::class, 'store']);
     Route::put('/accounts/{id}', [AccountController::class, 'update']);
     Route::delete('/accounts/{id}', [AccountController::class, 'destroy']);
-
-Route::get('/accountTypes', [AccountType::class, 'index']);
-Route::get('/accountTypes/{id}', [AccountType::class, 'show']);
-Route::post('/accountTypes', [AccountType::class, 'store']);
-Route::put('/accountTypes/{id}', [AccountType::class, 'update']);
-Route::delete('/accountTypes/{id}', [AccountType::class, 'destroy']);
+});
 
 Route::get('/bills', [BillController::class, 'index']);
 Route::get('/bills/{id}', [BillController::class, 'show']);
