@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('account_id')->constrained('accounts')->onDelete('cascade');
-            $table->foreignId('category_id')->constrained('category_id')->onDelete('cascade');
+            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
             $table->string('type');
             $table->decimal('amount', 15,2);
             $table->string('description')->nullable();
@@ -24,8 +24,6 @@ return new class extends Migration
             $table->string('source');
             $table->string('status');
             $table->uuid('transfer_group_id')->nullable();
-            $table->timestamp('created_at');
-            $table->timestamp('updated_at');
             $table->timestamps();
             $table->softDeletes();
         });
