@@ -66,6 +66,8 @@ class UserController extends Controller
                 'required',
                 Rule::in(['USD', 'KHR'])
             ],
+
+            'status' => 'nullable|string',
         ]);
 
         $profilePath = null;
@@ -85,6 +87,7 @@ class UserController extends Controller
             'phone' => $validated['phone'] ?? null,
             'profile' => $profilePath ?? null,
             'currency' => $validated['currency'],
+            'status' => $validated['status'] ?? 'active',
         ]);
 
         return response()->json([
@@ -126,10 +129,10 @@ class UserController extends Controller
                 Rule::in(['USD', 'KHR'])
             ],
 
-            // 'status' => [
-            //     'sometimes',
-            //     Rule::in(['active', 'inactive', 'suspended'])
-            // ],
+            'status' => [
+                'sometimes',
+                Rule::in(['active', 'inactive', 'suspended'])
+            ],
         ]);
 
         if ($request->hasFile('profile')) {
