@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Account\AccountController;
-use App\Http\Controllers\Account\AccountType;
+use App\Http\Controllers\Account\AccountTypeController;
 use App\Http\Controllers\AI\AIConversationController;
 use App\Http\Controllers\AI\AITestController;
 use App\Http\Controllers\Bill\BillController;
@@ -48,17 +48,18 @@ Route::delete('/users/{i,d}', [UserController::class, 'destroy']);
 Route::post('/register', [UserController::class, 'store']);
 Route::post('/login', [LoginController::class, 'login']);
 
+Route::get('/accountTypes', [AccountType::class, 'index']);
+Route::get('/accountTypes/{id}', [AccountType::class, 'show']);
+Route::post('/accountTypes', [AccountType::class, 'store']);
+Route::put('/accountTypes/{id}', [AccountType::class, 'update']);
+Route::delete('/accountTypes/{id}', [AccountType::class, 'destroy']);
+
 Route::get('/accounts', [AccountController::class, 'index']);
 Route::get('/accounts/{id}', [AccountController::class, 'show']);
 Route::post('/accounts', [AccountController::class, 'store']);
 Route::put('/accounts/{id}', [AccountController::class, 'update']);
 Route::delete('/accounts/{id}', [AccountController::class, 'destroy']);
 
-Route::get('/accountTypes', [AccountType::class, 'index']);
-Route::get('/accountTypes/{id}', [AccountType::class, 'show']);
-Route::post('/accountTypes', [AccountType::class, 'store']);
-Route::put('/accountTypes/{id}', [AccountType::class, 'update']);
-Route::delete('/accountTypes/{id}', [AccountType::class, 'destroy']);
 
 Route::get('/bills', [BillController::class, 'index']);
 Route::get('/bills/{id}', [BillController::class, 'show']);

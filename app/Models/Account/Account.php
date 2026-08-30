@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\Account\AccountTypeController;
 use App\Models\Bill\Bill;
 use App\Models\Category\Transaction;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
