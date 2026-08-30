@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Account;
 
+use App\Models\Account as ModelsAccount;
+use App\Models\Account\Account;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -20,6 +22,6 @@ class AccountType extends Model
      */
     public function account(): HasMany
     {
-        return $this->hasMany(Account::class);
+        return $this->hasMany(ModelsAccount::class);
     }
 }

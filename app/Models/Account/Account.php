@@ -41,7 +41,7 @@ class Account extends Model
      */
     public function accountType(): BelongsTo
     {
-        return $this->belongsTo(AccountType::class);
+        return $this->belongsTo(\App\Models\Account\AccountType::class);
     }
 
     public function transaction()
