@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Account;
 
 use App\Http\Controllers\Controller;
-use App\Models\Account;
+use App\Models\Account\Account;
 use App\Models\Account\AccountType;
 use Illuminate\Http\Request;
 

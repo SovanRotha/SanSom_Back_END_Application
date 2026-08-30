@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Account;
 
 use App\Http\Controllers\Account\AccountTypeController;
 use App\Models\Bill\Bill;
 use App\Models\Category\Transaction;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
