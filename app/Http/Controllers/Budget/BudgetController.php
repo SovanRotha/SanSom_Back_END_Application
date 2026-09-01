@@ -8,136 +8,193 @@ use Illuminate\Http\Request;
 
 class BudgetController extends Controller
 {
-    //
     public function index(Request $request)
     {
-        $user = $request->user();
+        try {
+            $user = $request->user();
 
-        $budget = Budget::where('user_id', $user->id)->with('budgetCategory.category')->latest('month')->get();
+            if (!$user) {
+                return response()->json([
+                    'message' => 'Unauthenticated'
+                ], 401);
+            }
 
-         return response()->json([
-            'message' => 'Budgets retrieved successfully',
-            'budgets' => $budget
-        ]);
+            $budget = Budget::where('user_id', $user->id)
+                ->with('budgetCategories.category')
+                ->latest('month')
+                ->get();
+
+            return response()->json([
+                'message' => 'Budgets retrieved successfully',
+                'budgets' => $budget
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Failed to retrieve budgets',
+                'error' => config('app.debug') ? $e->getMessage() : 'Internal Server Error',
+            ], 500);
+        }
     }
 
-     public function show(Request $request, $id)
+    public function show(Request $request, $id)
     {
-        $user = $request->user();
+        try {
+            $user = $request->user();
 
-        $budget = Budget::where('id', $id)
-            ->where('user_id', $user->id)
-            ->with('budgetCategory.category')
-            ->first();
+            if (!$user) {
+                return response()->json([
+                    'message' => 'Unauthenticated'
+                ], 401);
+            }
 
-        if (!$budget) {
+            $budget = Budget::where('id', $id)
+                ->where('user_id', $user->id)
+                ->with('budgetCategories.category')
+                ->first();
+
+            if (!$budget) {
+                return response()->json([
+                    'message' => 'Budget not found'
+                ], 404);
+            }
+
             return response()->json([
-                'message' => 'Budget not found'
-            ], 404);
+                'message' => 'Budget retrieved successfully',
+                'budget' => $budget
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Failed to retrieve budget',
+                'error' => config('app.debug') ? $e->getMessage() : 'Internal Server Error',
+            ], 500);
         }
-
-        return response()->json([
-            'message' => 'Budget retrieved successfully',
-            'budget' => $budget
-        ]);
     }
 
-    public function store(Request $request, $id)
+    public function store(Request $request)
     {
-        $user = $request->user();
+        try {
+            $user = $request->user();
 
-         $validated = $request->validate([
-            'name' => 'required|string|max:100',
+            if (!$user) {
+                return response()->json([
+                    'message' => 'Unauthenticated'
+                ], 401);
+            }
 
-            'month' => ['required', 'date_format:Y-m-d',],
+            $validated = $request->validate([
+                'name' => 'required|string|max:100',
+                'month' => ['required', 'date_format:Y-m-d'],
+                'total_limit' => 'required|numeric|min:0',
+                'rollover_enabled' => 'nullable|boolean',
+                'status' => 'nullable|in:active,inactive',
+            ]);
 
-            'total_limit' => 'required|numeric|min:0',
+            $existingBudget = Budget::where('user_id', $user->id)
+                ->whereDate('month', $validated['month'])
+                ->exists();
 
-            'rollover_enabled' => 'nullable|boolean',
+            if ($existingBudget) {
+                return response()->json([
+                    'message' => 'A budget for this month already exists'
+                ], 422);
+            }
 
-            'status' => 'nullable|in:active,inactive',
-        ]);
+            $budget = Budget::create([
+                'user_id' => $user->id,
+                'name' => $validated['name'],
+                'month' => $validated['month'],
+                'total_limit' => $validated['total_limit'],
+                'rollover_enabled' => $validated['rollover_enabled'] ?? false,
+                'rollover_amount' => 0,
+                'status' => $validated['status'] ?? 'active',
+            ]);
 
-        $existingBudget = Budget::where('user_id', $user->id)
-            ->whereDate('month', $validated['month'])
-            ->exists();
-
-        if ($existingBudget) {
             return response()->json([
-                'message' => 'A budget for this month already exists'
-            ], 422);
+                'message' => 'Budget created successfully',
+                'budget' => $budget
+            ], 201);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Failed to create budget',
+                'error' => config('app.debug') ? $e->getMessage() : 'Internal Server Error',
+            ], 500);
         }
-
-        $budget = Budget::create([
-            'user_id' => $user->id,
-            'name' => $validated['name'],
-            'month' => $validated['month'],
-            'total_limit' => $validated['total_limit'],
-            'rollover_enabled' => $validated['rollover_enabled'] ?? false,
-            'rollover_amount' => 0,
-            'status' => $validated['status'] ?? 'active',
-        ]);
-
-        return response()->json([
-            'message' => 'Budget created successfully',
-            'budget' => $budget
-        ], 201);
     }
 
     public function update(Request $request, $id)
     {
-         $user = $request->user();
+        try {
+            $user = $request->user();
 
-        $budget = Budget::where('id', $id)
-            ->where('user_id', $user->id)
-            ->first();
+            if (!$user) {
+                return response()->json([
+                    'message' => 'Unauthenticated'
+                ], 401);
+            }
 
-        if (!$budget) {
+            $budget = Budget::where('id', $id)
+                ->where('user_id', $user->id)
+                ->first();
+
+            if (!$budget) {
+                return response()->json([
+                    'message' => 'Budget not found'
+                ], 404);
+            }
+
+            $validated = $request->validate([
+                'name' => 'sometimes|string|max:100',
+                'month' => ['sometimes', 'date_format:Y-m-d'],
+                'total_limit' => 'sometimes|numeric|min:0',
+                'rollover_enabled' => 'sometimes|boolean',
+                'status' => 'sometimes|in:active,inactive',
+            ]);
+
+            $budget->update($validated);
+
             return response()->json([
-                'message' => 'Budget not found'
-            ], 404);
+                'message' => 'Budget updated successfully',
+                'budget' => $budget->fresh()
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Failed to update budget',
+                'error' => config('app.debug') ? $e->getMessage() : 'Internal Server Error',
+            ], 500);
         }
-
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:100',
-
-            'month' => ['sometimes','date_format:Y-m-d',],
-
-            'total_limit' => 'sometimes|numeric|min:0',
-
-            'rollover_enabled' => 'sometimes|boolean',
-
-            'status' => 'sometimes|in:active,inactive',
-        ]);
-
-        $budget->update($validated);
-
-
-        return response()->json([
-            'message' => 'Budget updated successfully',
-            'budget' => $budget->fresh()
-        ]);
     }
 
     public function destroy(Request $request, $id)
     {
-         $user = $request->user();
+        try {
+            $user = $request->user();
 
-        $budget = Budget::where('id', $id)
-            ->where('user_id', $user->id)
-            ->first();
+            if (!$user) {
+                return response()->json([
+                    'message' => 'Unauthenticated'
+                ], 401);
+            }
 
-        if (!$budget) {
+            $budget = Budget::where('id', $id)
+                ->where('user_id', $user->id)
+                ->first();
+
+            if (!$budget) {
+                return response()->json([
+                    'message' => 'Budget not found'
+                ], 404);
+            }
+
+            $budget->delete();
+
             return response()->json([
-                'message' => 'Budget not found'
-            ], 404);
+                'message' => 'Budget deleted successfully'
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Failed to delete budget',
+                'error' => config('app.debug') ? $e->getMessage() : 'Internal Server Error',
+            ], 500);
         }
-         $budget->delete();
-
-
-        return response()->json([
-            'message' => 'Budget deleted successfully'
-        ]);
     }
-
 }

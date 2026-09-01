@@ -78,17 +78,22 @@ Route::put('/subscriptions/{id}', [SubscriptionController::class, 'update']);
 Route::delete('/subscriptions/{id}', [SubscriptionController::class, 'destroy']);
 Route::post('/subscriptions', [SubscriptionController::class, 'store']);
 
-Route::get('/budgets', [BudgetController::class, 'index']);
-Route::post('/budgets', [BudgetController::class, 'store']);
-Route::put('/budgets/{id}', [BudgetController::class, 'update']);
-Route::delete('/budgets/{id}', [BudgetController::class, 'destroy']);
-Route::get('/budgets/{id}', [BudgetController::class, 'show']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/budgets', [BudgetController::class, 'index']);
+    Route::post('/budgets', [BudgetController::class, 'store']);
+    Route::put('/budgets/{id}', [BudgetController::class, 'update']);
+    Route::delete('/budgets/{id}', [BudgetController::class, 'destroy']);
+    Route::get('/budgets/{id}', [BudgetController::class, 'show']);
+});
 
-Route::get('/budgetCategories', [BudgetCategoryController::class, 'index']);
-Route::get('/budgetCategories/{id}', [BudgetCategoryController::class, 'show']);
-Route::post('/budgetCategories', [BudgetCategoryController::class, 'store']);
-Route::put('/budgetCategories/{id}', [BudgetCategoryController::class, 'update']);
-Route::delete('/budgetCategories/{id}', [BudgetCategoryController::class, 'destroy']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/budgetCategories', [BudgetCategoryController::class, 'index']);
+    Route::post('/budgetCategories', [BudgetCategoryController::class, 'store']);
+    Route::get('/budgetCategories/{id}', [BudgetCategoryController::class, 'show']);
+    Route::put('/budgetCategories/{id}', [BudgetCategoryController::class, 'update']);
+    Route::delete('/budgetCategories/{id}', [BudgetCategoryController::class, 'destroy']);
+});
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/categories', [CategoryController::class, 'index']);
@@ -110,6 +115,7 @@ Route::get('/attachments/{id}', [TransactionAttachmentController::class, 'show']
 Route::post('/attachments', [TransactionAttachmentController::class, 'store']);
 // Route::put('/attachments/{id}', [TransactionAttachmentController::class, 'update']);
 Route::delete('/attachments/{id}', [TransactionAttachmentController::class, 'destroy']);
+
 
 Route::get('/goals', [SavingGoalController::class, 'index']);
 Route::get('/goals/{id}', [SavingGoalController::class, 'show']);
