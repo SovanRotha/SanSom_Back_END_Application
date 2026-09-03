@@ -60,7 +60,7 @@ class BudgetController extends Controller
 
             return response()->json([
                 'message' => 'Budget retrieved successfully',
-                'budget' => $budget
+                'budgets' => $budget
             ]);
         } catch (\Throwable $e) {
             return response()->json([
@@ -111,7 +111,7 @@ class BudgetController extends Controller
 
             return response()->json([
                 'message' => 'Budget created successfully',
-                'budget' => $budget
+                'budgets' => $budget
             ], 201);
         } catch (\Throwable $e) {
             return response()->json([
@@ -154,7 +154,7 @@ class BudgetController extends Controller
 
             return response()->json([
                 'message' => 'Budget updated successfully',
-                'budget' => $budget->fresh()
+                'budgets' => $budget->fresh()
             ]);
         } catch (\Throwable $e) {
             return response()->json([

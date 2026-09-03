@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Category;
 
 use App\Http\Controllers\Controller;
 use App\Models\Account;
+use App\Models\Account\Account as ModelsAccount;
 use App\Models\Budget\Budget;
 use App\Models\Budget\BudgetCategory;
 use App\Models\Category\Category;
@@ -54,7 +55,7 @@ class TransactionController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $account = Account::where('id', $validated['account_id'])
+        $account = ModelsAccount::where('id', $validated['account_id'])
             ->where('user_id', $user->id)
             ->where('status', 'active')
             ->first();
@@ -265,7 +266,7 @@ class TransactionController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $newAccount = Account::where('id', $validated['account_id'])->where('user_id', $user->id)->where('status', 'active')->first();
+        $newAccount = ModelsAccount::where('id', $validated['account_id'])->where('user_id', $user->id)->where('status', 'active')->first();
 
         if (!$newAccount) {
             return response()->json([

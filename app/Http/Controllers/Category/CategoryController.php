@@ -79,7 +79,7 @@ class CategoryController extends Controller
 
             return response()->json([
                 'message' => 'Category retrieved successfully',
-                'category' => $category
+                'categories' => $category
             ]);
         } catch (\Throwable $e) {
             return response()->json([
@@ -169,7 +169,7 @@ class CategoryController extends Controller
 
             return response()->json([
                 'message' => 'Category created successfully',
-                'category' => $category
+                'categories' => $category
             ], 201);
         } catch (\Throwable $e) {
             return response()->json([
@@ -273,7 +273,7 @@ class CategoryController extends Controller
 
             return response()->json([
                 'message' => 'Category updated successfully',
-                'category' => $category
+                'categories' => $category
             ]);
         } catch (\Throwable $e) {
             return response()->json([

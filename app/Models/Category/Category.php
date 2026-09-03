@@ -19,7 +19,8 @@ class Category extends Model
         "parent_id",
         "icon",
         "color",
-        "is_system"
+        "is_system",
+        "status"
     ];
 
     public function user()

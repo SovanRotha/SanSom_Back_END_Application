@@ -136,7 +136,7 @@ class BudgetCategoryController extends Controller
 
             return response()->json([
                 'message' => 'Category added to budget successfully',
-                'budget_category' => $budgetCategory->load('category')
+                'budget_categories' => $budgetCategory->load('category')
             ], 201);
         } catch (\Throwable $e) {
             return response()->json([
@@ -198,7 +198,7 @@ class BudgetCategoryController extends Controller
 
             return response()->json([
                 'message' => 'Budget category retrieved successfully',
-                'budget_category' => $budgetCategory
+                'budget_categories' => $budgetCategory
             ]);
         } catch (\Throwable $e) {
             return response()->json([
@@ -266,7 +266,7 @@ class BudgetCategoryController extends Controller
 
             return response()->json([
                 'message' => 'Budget category updated successfully',
-                'budget_category' => $budgetCategory->fresh()->load('category')
+                'budget_categories' => $budgetCategory->fresh()->load('category')
             ]);
         } catch (\Throwable $e) {
             return response()->json([
