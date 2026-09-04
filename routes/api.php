@@ -48,17 +48,19 @@ Route::delete('/users/{i,d}', [UserController::class, 'destroy']);
 Route::post('/register', [UserController::class, 'store']);
 Route::post('/login', [LoginController::class, 'login']);
 
-Route::get('/accounts', [AccountController::class, 'index']);
-Route::get('/accounts/{id}', [AccountController::class, 'show']);
-Route::post('/accounts', [AccountController::class, 'store']);
-Route::put('/accounts/{id}', [AccountController::class, 'update']);
-Route::delete('/accounts/{id}', [AccountController::class, 'destroy']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/accounts', [AccountController::class, 'index']);
+    Route::get('/accounts/{id}', [AccountController::class, 'show']);
+    Route::post('/accounts', [AccountController::class, 'store']);
+    Route::put('/accounts/{id}', [AccountController::class, 'update']);
+    Route::delete('/accounts/{id}', [AccountController::class, 'destroy']);
 
-Route::get('/accountTypes', [AccountType::class, 'index']);
-Route::get('/accountTypes/{id}', [AccountType::class, 'show']);
-Route::post('/accountTypes', [AccountType::class, 'store']);
-Route::put('/accountTypes/{id}', [AccountType::class, 'update']);
-Route::delete('/accountTypes/{id}', [AccountType::class, 'destroy']);
+    Route::get('/accountTypes', [AccountType::class, 'index']);
+    Route::get('/accountTypes/{id}', [AccountType::class, 'show']);
+    Route::post('/accountTypes', [AccountType::class, 'store']);
+    Route::put('/accountTypes/{id}', [AccountType::class, 'update']);
+    Route::delete('/accountTypes/{id}', [AccountType::class, 'destroy']);
+});
 
 Route::get('/bills', [BillController::class, 'index']);
 Route::get('/bills/{id}', [BillController::class, 'show']);
@@ -103,12 +105,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
 });
 
-
-Route::get('/transactions', [TransactionController::class, 'index']);
-Route::get('/transactions/{id}', [TransactionController::class, 'show']);
-Route::post('/transactions', [TransactionController::class, 'store']);
-Route::put('/transactions/{id}', [TransactionController::class, 'update']);
-Route::delete('/transactions/{id}', [TransactionController::class, 'destroy']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/transactions', [TransactionController::class, 'index']);
+    Route::get('/transactions/{id}', [TransactionController::class, 'show']);
+    Route::post('/transactions', [TransactionController::class, 'store']);
+    Route::put('/transactions/{id}', [TransactionController::class, 'update']);
+    Route::delete('/transactions/{id}', [TransactionController::class, 'destroy']);
+});
 
 Route::get('/attachments', [TransactionAttachmentController::class, 'index']);
 Route::get('/attachments/{id}', [TransactionAttachmentController::class, 'show']);

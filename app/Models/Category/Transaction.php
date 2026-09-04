@@ -2,7 +2,7 @@
 
 namespace App\Models\Category;
 
-use App\Models\Account;
+use App\Models\Account\Account as ModelsAccount;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -32,7 +32,7 @@ class Transaction extends Model
 
     public function account()
     {
-        return $this->belongsTo(Account::class);
+        return $this->belongsTo(ModelsAccount::class);
     }
 
     public function category()
@@ -44,5 +44,4 @@ class Transaction extends Model
     {
         return $this->hasMany(TransactionAttachment::class);
     }
-
 }

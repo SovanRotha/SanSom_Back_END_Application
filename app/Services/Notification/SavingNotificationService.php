@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Notification\Notification;
+namespace App\Services\Notification;
 
 use App\Models\Saving\SavingGoal;
 use App\Services\Notification\NotificationService;

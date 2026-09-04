@@ -1,0 +1,455 @@
+[1mdiff --git a/app/Http/Controllers/Category/TransactionController.php b/app/Http/Controllers/Category/TransactionController.php[m
+[1mindex 310b1f4..553e2f5 100644[m
+[1m--- a/app/Http/Controllers/Category/TransactionController.php[m
+[1m+++ b/app/Http/Controllers/Category/TransactionController.php[m
+[36m@@ -3,49 +3,68 @@[m
+ namespace App\Http\Controllers\Category;[m
+ [m
+ use App\Http\Controllers\Controller;[m
+[31m-use App\Models\Account;[m
+ use App\Models\Account\Account as ModelsAccount;[m
+ use App\Models\Budget\Budget;[m
+ use App\Models\Budget\BudgetCategory;[m
+ use App\Models\Category\Category;[m
+ use App\Models\Category\Transaction;[m
+ use App\Services\Notification\NotificationService;[m
+[31m-use App\Services\Notification\Notification\BudgetNotificationService;[m
+[32m+[m[32muse App\Services\Notification\BudgetNotificationService;[m
+ use Illuminate\Http\Request;[m
+ use Illuminate\Support\Facades\DB;[m
+ [m
+ class TransactionController extends Controller[m
+ {[m
+[31m-    //[m
+[31m-[m
+[31m-    public function __construct(protected NotificationService $notificationService, protected BudgetNotificationService $budgetNotification) {}[m
+[32m+[m[32m    public function __construct([m
+[32m+[m[32m        protected NotificationService $notificationService,[m
+[32m+[m[32m        protected BudgetNotificationService $budgetNotification[m
+[32m+[m[32m    ) {[m
+[32m+[m[32m    }[m
+ [m
+[32m+[m[32m    /**[m
+[32m+[m[32m     * Get all transactions[m
+[32m+[m[32m     */[m
+     public function index()[m
+     {[m
+[31m-        $transaction = Transaction::with('user', 'account', 'category')->get();[m
+[32m+[m[32m        $transactions = Transaction::with(['user', 'account', 'category'])->get();[m
+ [m
+         return response()->json([[m
+[31m-            "Message" => "Transaction retrieved Successfully",[m
+[31m-            "transaction" => $transaction[m
+[32m+[m[32m            'message' => 'Transaction retrieved successfully',[m
+[32m+[m[32m            'transaction' => $transactions,[m
+         ]);[m
+     }[m
+ [m
+[32m+[m[32m    /**[m
+[32m+[m[32m     * Get single transaction[m
+[32m+[m[32m     */[m
+     public function show($id)[m
+     {[m
+[31m-        $transaction = Transaction::with('user', 'account', 'category')->find($id);[m
+[32m+[m[32m        $transaction = Transaction::with(['user', 'account', 'category'])->find($id);[m
+[32m+[m
+[32m+[m[32m        if (!$transaction) {[m
+[32m+[m[32m            return response()->json([[m
+[32m+[m[32m                'message' => 'Transaction not found',[m
+[32m+[m[32m            ], 404);[m
+[32m+[m[32m        }[m
+ [m
+         return response()->json([[m
+[31m-            "Message" => "Transaction retrieved Successfully",[m
+[31m-            "transaction" => $transaction[m
+[32m+[m[32m            'message' => 'Transaction retrieved successfully',[m
+[32m+[m[32m            'transaction' => $transaction,[m
+         ]);[m
+     }[m
+ [m
+[31m-    public function store(Request $request, $id)[m
+[32m+[m[32m    /**[m
+[32m+[m[32m     * Create transaction[m
+[32m+[m[32m     */[m
+[32m+[m[32m    public function store(Request $request)[m
+     {[m
+         $user = $request->user();[m
+ [m
+[32m+[m[32m        if (!$user) {[m
+[32m+[m[32m            return response()->json(['message' => 'Unauthenticated'], 401);[m
+[32m+[m[32m        }[m
+[32m+[m
+         $validated = $request->validate([[m
+[31m-            // 'user_id' => 'required|exists:users,id',[m
+             'account_id' => 'required|exists:accounts,id',[m
+             'category_id' => 'required|exists:categories,id',[m
+             'type' => 'required|in:income,expense',[m
+[36m@@ -55,75 +74,42 @@[m [mpublic function store(Request $request, $id)[m
+             'notes' => 'nullable|string',[m
+         ]);[m
+ [m
+[32m+[m[32m        // --- Account ---[m
+         $account = ModelsAccount::where('id', $validated['account_id'])[m
+             ->where('user_id', $user->id)[m
+             ->where('status', 'active')[m
+             ->first();[m
+ [m
+         if (!$account) {[m
+[31m-            return response()->json([[m
+[31m-                'message' => 'Account not found'[m
+[31m-            ], 404);[m
+[32m+[m[32m            return response()->json(['message' => 'Account not found'], 404);[m
+         }[m
+ [m
+[31m-        $category = null;[m
+[31m-[m
+[31m-        if (!empty($validated['category_id'])) {[m
+[31m-[m
+[31m-            $category = Category::where('id', $validated['category_id'])[m
+[31m-                ->where('status', 'active')[m
+[31m-                ->where(function ($query) use ($user) {[m
+[31m-                    $query->where('is_system', true)[m
+[31m-                        ->orWhere('user_id', $user->id);[m
+[31m-                })[m
+[31m-                ->first();[m
+[31m-[m
+[31m-            if (!$category) {[m
+[31m-                return response()->json([[m
+[31m-                    'message' => 'Category not found'[m
+[31m-                ], 404);[m
+[31m-            }[m
+[31m-        }[m
+[31m-[m
+[31m-        if ([m
+[31m-            $validated['type'] === 'transfer'[m
+[31m-            && $validated['category_id'] !== null[m
+[31m-        ) {[m
+[31m-            return response()->json([[m
+[31m-                'message' => 'Transfer should not have a category'[m
+[31m-            ], 422);[m
+[31m-        }[m
+[32m+[m[32m        // --- Category ---[m
+[32m+[m[32m        $category = Category::where('id', $validated['category_id'])[m
+[32m+[m[32m            ->where('status', 'active')[m
+[32m+[m[32m            ->where(function ($query) use ($user) {[m
+[32m+[m[32m                $query->where('is_system', true)[m
+[32m+[m[32m                    ->orWhere('user_id', $user->id);[m
+[32m+[m[32m            })[m
+[32m+[m[32m            ->first();[m
+ [m
+[31m-        if ([m
+[31m-            $validated['type'] === 'income'[m
+[31m-            && $category->type !== 'income'[m
+[31m-        ) {[m
+[31m-            return response()->json([[m
+[31m-                'message' => 'Income transaction must use an income category'[m
+[31m-            ], 422);[m
+[32m+[m[32m        if (!$category) {[m
+[32m+[m[32m            return response()->json(['message' => 'Category not found'], 404);[m
+         }[m
+ [m
+[31m-        if ([m
+[31m-            $validated['type'] === 'expense'[m
+[31m-            && $category->type !== 'expense'[m
+[31m-        ) {[m
+[32m+[m[32m        // --- Type must match category type ---[m
+[32m+[m[32m        if ($category->type !== $validated['type']) {[m
+             return response()->json([[m
+[31m-                'message' => 'Expense transaction must use an expense category'[m
+[32m+[m[32m                'message' => ucfirst($validated['type']) . ' transaction must use a ' . $validated['type'] . ' category',[m
+             ], 422);[m
+         }[m
+ [m
+[31m-        //  if ($validated['type'] === 'transfer') {[m
+[31m-[m
+[31m-        // return response()->json([[m
+[31m-        //     'message' => 'Use the transfer endpoint to create a transfer'[m
+[31m-        // ], 422);[m
+[31m-        // }[m
+[31m-[m
+[31m-        $transaction = DB::transaction(function () use ($user, $account, $validated, $id) {[m
+[32m+[m[32m        // --- Create transaction + update balance ---[m
+[32m+[m[32m        $transaction = DB::transaction(function () use ($user, $account, $validated) {[m
+             $transaction = Transaction::create([[m
+[31m-                "user_id" => $user->id,[m
+[32m+[m[32m                'user_id' => $user->id,[m
+                 'account_id' => $account->id,[m
+[31m-                'category_id' => $validated['category_id'] ?? null,[m
+[32m+[m[32m                'category_id' => $validated['category_id'],[m
+                 'type' => $validated['type'],[m
+                 'amount' => $validated['amount'],[m
+                 'description' => $validated['description'] ?? null,[m
+[36m@@ -133,132 +119,76 @@[m [mpublic function store(Request $request, $id)[m
+                 'status' => 'completed',[m
+             ]);[m
+ [m
+[31m-            if ($validated['type'] === 'income') {[m
+[31m-                $account->increment([m
+[31m-                    'balance',[m
+[31m-                    $validated['amount'][m
+[31m-                );[m
+[31m-            } elseif ($validated['type'] === 'expense') {[m
+[31m-                $account->decrement([m
+[31m-                    'balance',[m
+[31m-                    $validated['amount'][m
+[31m-                );[m
+[31m-            }[m
+[32m+[m[32m            $validated['type'] === 'income'[m
+[32m+[m[32m                ? $account->increment('balance', $validated['amount'])[m
+[32m+[m[32m                : $account->decrement('balance', $validated['amount']);[m
+[32m+[m
+             return $transaction;[m
+         });[m
+ [m
+[32m+[m[32m        // --- Budget notification (expense only) ---[m
+         if ($transaction->type === 'expense') {[m
+[31m-[m
+[31m-            // Find the user's active budget[m
+[31m-            $budget = Budget::where('user_id', $user->id)[m
+[31m-                ->whereDate([m
+[31m-                    'start_date',[m
+[31m-                    '<=',[m
+[31m-                    $transaction->transaction_date[m
+[31m-                )[m
+[31m-                ->whereDate([m
+[31m-                    'end_date',[m
+[31m-                    '>=',[m
+[31m-                    $transaction->transaction_date[m
+[31m-                )[m
+[31m-                ->first();[m
+[31m-[m
+[31m-            if ($budget) {[m
+[31m-[m
+[31m-                // Find budget category[m
+[31m-                $budgetCategory = BudgetCategory::where([m
+[31m-                    'budget_id',[m
+[31m-                    $budget->id[m
+[31m-                )[m
+[31m-                    ->where([m
+[31m-                        'category_id',[m
+[31m-                        $transaction->category_id[m
+[31m-                    )[m
+[31m-                    ->first();[m
+[31m-[m
+[31m-                if ($budgetCategory) {[m
+[31m-[m
+[31m-                    // Calculate total spending[m
+[31m-                    $spent = Transaction::where([m
+[31m-                        'user_id',[m
+[31m-                        $user->id[m
+[31m-                    )[m
+[31m-                        ->where([m
+[31m-                            'category_id',[m
+[31m-                            $transaction->category_id[m
+[31m-                        )[m
+[31m-                        ->where([m
+[31m-                            'type',[m
+[31m-                            'expense'[m
+[31m-                        )[m
+[31m-                        ->whereBetween([m
+[31m-                            'transaction_date',[m
+[31m-                            [[m
+[31m-                                $budget->start_date,[m
+[31m-                                $budget->end_date[m
+[31m-                            ][m
+[31m-                        )[m
+[31m-                        ->sum('amount');[m
+[31m-[m
+[31m-                    // Send to BudgetNotificationService[m
+[31m-                    $this->budgetNotification->checkBudget([m
+[31m-                        $budgetCategory,[m
+[31m-                        (float) $spent[m
+[31m-                    );[m
+[31m-                }[m
+[31m-            }[m
+[32m+[m[32m            $this->notifyBudgetIfNeeded($user, $transaction);[m
+         }[m
+ [m
+         return response()->json([[m
+[31m-            'Message' => 'Transaction created Successfully',[m
+[31m-            'transaction' => $transaction[m
+[31m-        ]);[m
+[32m+[m[32m            'message' => 'Transaction created successfully',[m
+[32m+[m[32m            'transaction' => $transaction,[m
+[32m+[m[32m        ], 201);[m
+     }[m
+ [m
+[32m+[m[32m    /**[m
+[32m+[m[32m     * Delete transaction[m
+[32m+[m[32m     */[m
+     public function destroy(Request $request, $id)[m
+     {[m
+         $user = $request->user();[m
+ [m
+[31m-        $transaction = Transaction::where('id', $id)->where('user_id', $id)->first();[m
+[32m+[m[32m        if (!$user) {[m
+[32m+[m[32m            return response()->json(['message' => 'Unauthenticated'], 401);[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        $transaction = Transaction::where('id', $id)[m
+[32m+[m[32m            ->where('user_id', $user->id)[m
+[32m+[m[32m            ->first();[m
+ [m
+         if (!$transaction) {[m
+[31m-            return response()->json([[m
+[31m-                'message' => 'Transaction not found'[m
+[31m-            ], 404);[m
+[32m+[m[32m            return response()->json(['message' => 'Transaction not found'], 404);[m
+         }[m
+ [m
+         DB::transaction(function () use ($transaction) {[m
+[31m-            if ($transaction->type === 'income') {[m
+[31m-                $transaction->account->decrement([m
+[31m-                    'balance',[m
+[31m-                    $transaction->amount[m
+[31m-                );[m
+[31m-            } elseif ($transaction->type === 'expense') {[m
+[31m-                $transaction->account->increment([m
+[31m-                    'balance',[m
+[31m-                    $transaction->amount[m
+[31m-                );[m
+[31m-            }[m
+[31m-        });[m
+[32m+[m[32m            $transaction->type === 'income'[m
+[32m+[m[32m                ? $transaction->account->decrement('balance', $transaction->amount)[m
+[32m+[m[32m                : $transaction->account->increment('balance', $transaction->amount);[m
+ [m
+[31m-        $transaction->delete();[m
+[32m+[m[32m            $transaction->delete();[m
+[32m+[m[32m        });[m
+ [m
+[31m-        return response()->json([m
+[31m-            [[m
+[31m-                'Message' => 'Transaction deleted Successfully !'[m
+[31m-            ][m
+[31m-        );[m
+[32m+[m[32m        return response()->json(['message' => 'Transaction deleted successfully']);[m
+     }[m
+ [m
+[32m+[m[32m    /**[m
+[32m+[m[32m     * Update transaction[m
+[32m+[m[32m     */[m
+     public function update(Request $request, $id)[m
+     {[m
+         $user = $request->user();[m
+ [m
+[31m-        $transaction = Transaction::where('id', $id)->where('user_id', $user)->first();[m
+[32m+[m[32m        if (!$user) {[m
+[32m+[m[32m            return response()->json(['message' => 'Unauthenticated'], 401);[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        $transaction = Transaction::where('id', $id)[m
+[32m+[m[32m            ->where('user_id', $user->id)[m
+[32m+[m[32m            ->first();[m
+[32m+[m
+[32m+[m[32m        if (!$transaction) {[m
+[32m+[m[32m            return response()->json(['message' => 'Transaction not found'], 404);[m
+[32m+[m[32m        }[m
+ [m
+         $validated = $request->validate([[m
+[31m-            'account_id' => 'required|exists:accounts, id',[m
+[31m-            'category_id' => 'required|exists:categories, id',[m
+[32m+[m[32m            'account_id' => 'required|exists:accounts,id',[m
+[32m+[m[32m            'category_id' => 'required|exists:categories,id',[m
+             'type' => 'required|in:income,expense',[m
+             'amount' => 'required|numeric|min:0',[m
+             'description' => 'nullable|string|max:255',[m
+[36m@@ -266,79 +196,92 @@[m [mpublic function update(Request $request, $id)[m
+             'notes' => 'nullable|string',[m
+         ]);[m
+ [m
+[31m-        $newAccount = ModelsAccount::where('id', $validated['account_id'])->where('user_id', $user->id)->where('status', 'active')->first();[m
+[32m+[m[32m        // --- New account ---[m
+[32m+[m[32m        $newAccount = ModelsAccount::where('id', $validated['account_id'])[m
+[32m+[m[32m            ->where('user_id', $user->id)[m
+[32m+[m[32m            ->where('status', 'active')[m
+[32m+[m[32m            ->first();[m
+ [m
+         if (!$newAccount) {[m
+[31m-            return response()->json([[m
+[31m-                'message' => 'Account not found'[m
+[31m-            ], 404);[m
+[32m+[m[32m            return response()->json(['message' => 'Account not found'], 404);[m
+         }[m
+ [m
+[31m-        if ($validated['category_id']) {[m
+[31m-[m
+[31m-            $category = Category::where('id', $validated['category_id'])[m
+[31m-                ->where('status', 'active')[m
+[31m-                ->where(function ($query) use ($user) {[m
+[31m-                    $query->where('is_system', true)[m
+[31m-                        ->orWhere('user_id', $user->id);[m
+[31m-                })[m
+[31m-                ->first();[m
+[31m-[m
+[31m-            if (!$category) {[m
+[31m-                return response()->json([[m
+[31m-                    'message' => 'Category not found'[m
+[31m-                ], 404);[m
+[31m-            }[m
+[31m-[m
+[31m-            if ($category->type !== $validated['type']) {[m
+[31m-                return response()->json([[m
+[31m-                    'message' => 'Category type does not match transaction type'[m
+[31m-                ], 422);[m
+[31m-            }[m
+[31m-        }[m
+[32m+[m[32m        // --- Category ---[m
+[32m+[m[32m        $category = Category::where('id', $validated['category_id'])[m
+[32m+[m[32m            ->where('status', 'active')[m
+[32m+[m[32m            ->where(function ($query) use ($user) {[m
+[32m+[m[32m                $query->where('is_system', true)[m
+[32m+[m[32m                    ->orWhere('user_id', $user->id);[m
+[32m+[m[32m            })[m
+[32m+[m[32m            ->first();[m
+ [m
+[31m-        DB::transaction(function () use ($transaction, $newAccount, $validated) {[m
+[31m-            if ($transaction->type === 'income') {[m
+[32m+[m[32m        if (!$category) {[m
+[32m+[m[32m            return response()->json(['message' => 'Category not found'], 404);[m
+[32m+[m[32m        }[m
+ [m
+[31m-                $transaction->account->decrement([m
+[31m-                    'balance',[m
+[31m-                    $transaction->amount[m
+[31m-                );[m
+[31m-            } elseif ($transaction->type === 'expense') {[m
+[32m+[m[32m        if ($category->type !== $validated['type']) {[m
+[32m+[m[32m            return response()->json([[m
+[32m+[m[32m                'message' => 'Category type does not match transaction type',[m
+[32m+[m[32m            ], 422);[m
+[32m+[m[32m        }[m
+ [m
+[31m-                $transaction->account->increment([m
+[31m-                    'balance',[m
+[31m-                    $transaction->amount[m
+[31m-                );[m
+[31m-            }[m
+[32m+[m[32m        DB::transaction(function () use ($transaction, $newAccount, $validated) {[m
+[32m+[m[32m            // Reverse old balance effect[m
+[32m+[m[32m            $transaction->type === 'income'[m
+[32m+[m[32m                ? $transaction->account->decrement('balance', $transaction->amount)[m
+[32m+[m[32m                : $transaction->account->increment('balance', $transaction->amount);[m
+ [m
+             $transaction->update([[m
+                 'account_id' => $validated['account_id'],[m
+[31m-                'category_id' => $validated['category_id'] ?? null,[m
+[32m+[m[32m                'category_id' => $validated['category_id'],[m
+                 'type' => $validated['type'],[m
+                 'amount' => $validated['amount'],[m
+                 'description' => $validated['description'] ?? null,[m
+                 'transaction_date' => $validated['transaction_date'],[m
+                 'notes' => $validated['notes'] ?? null,[m
+             ]);[m
+[31m-            if ($validated['type'] === 'income') {[m
+[31m-[m
+[31m-                $newAccount->increment([m
+[31m-                    'balance',[m
+[31m-                    $validated['amount'][m
+[31m-                );[m
+[31m-            } else {[m
+[31m-[m
+[31m-                $newAccount->decrement([m
+[31m-                    'balance',[m
+[31m-                    $validated['amount'][m
+[31m-                );[m

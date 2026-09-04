@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Account extends Model
 {
@@ -29,28 +30,25 @@ class Account extends Model
         'balance' => 'decimal:2',
     ];
 
-    /**
-     * Account belongs to a user.
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Account belongs to an account type.
-     */
+    // AccountType is not imported with a use statement because it lives in
+    // the same namespace as this class (App\Models\Account), so PHP
+    // resolves it automatically.
     public function accountType(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\Account\AccountType::class);
+        return $this->belongsTo(AccountType::class, 'account_type_id');
     }
 
-    public function transaction()
+    public function transaction(): HasMany
     {
         return $this->hasMany(Transaction::class);
     }
 
-    public function bill()
+    public function bill(): HasMany
     {
         return $this->hasMany(Bill::class);
     }

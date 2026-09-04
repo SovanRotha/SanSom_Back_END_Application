@@ -1,36 +1,33 @@
 <?php
 
-namespace App\Services\Notification\Notification;
+namespace App\Services\Notification;
 
 use App\Models\Saving\SavingGoal;
-use App\Services\Notification\NotificationService;
 use Carbon\Carbon;
 
 class ReminderNotificationService
 {
+    protected const DEADLINE_WARNING_DAYS = 7;
+
     public function __construct(
         protected NotificationService $notification
     ) {
     }
 
     /**
-     * Check if a saving goal deadline is approaching.
+     * Check if a saving goal deadline is approaching or overdue,
+     * and create a notification if applicable.
      */
-    public function checkSavingGoalDeadline(
-        SavingGoal $savingGoal
-    ) {
-        $targetDate = Carbon::parse($savingGoal->target_date);
-
-        $today = Carbon::today();
-
-        $daysRemaining = $today->diffInDays($targetDate, false);
-
-        // Goal is already completed
+    public function checkSavingGoalDeadline(SavingGoal $savingGoal)
+    {
+        // Goal is already completed — nothing to notify
         if ($savingGoal->current_amount >= $savingGoal->target_amount) {
             return null;
         }
 
-        // Goal is overdue
+        $targetDate = Carbon::parse($savingGoal->target_date);
+        $daysRemaining = Carbon::today()->diffInDays($targetDate, false);
+
         if ($daysRemaining < 0) {
             return $this->notification->create(
                 $savingGoal->user_id,
@@ -45,8 +42,7 @@ class ReminderNotificationService
             );
         }
 
-        // 7 days remaining
-        if ($daysRemaining <= 7) {
+        if ($daysRemaining <= self::DEADLINE_WARNING_DAYS) {
             return $this->notification->create(
                 $savingGoal->user_id,
                 type: 'saving_goal_deadline',

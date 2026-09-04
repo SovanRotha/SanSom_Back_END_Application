@@ -20,7 +20,7 @@ class UserController extends Controller
         return response()->json([
             'message' => 'Users retrieved successfully',
             'users' => $users
-        ]);
+        ],200);
     }
 
 
@@ -38,7 +38,7 @@ class UserController extends Controller
         return response()->json([
             'message' => 'User retrieved successfully',
             'user' => $user
-        ]);
+        ],200);
     }
 
 
@@ -77,7 +77,7 @@ class UserController extends Controller
                 ->store('profiles', 'public');
         }
 
-        $defaultRole = Role::where('role', 'user')->firstOrFail();
+     $defaultRole = Role::firstOrCreate(['role' => 'user']);
 
         $user = User::create([
             'name' => $validated['name'],
@@ -90,9 +90,12 @@ class UserController extends Controller
             'status' => $validated['status'] ?? 'active',
         ]);
 
-        return response()->json([
+$token = $user->createToken('sanSom-token')->plainTextToken;
+
+       return response()->json([
             'message' => 'User created successfully',
-            'user' => $user,
+            'token' => $token, // ADDED: បន្ថែម Token ក្នុង Response
+            'user' => $user->load('role'), // CHANGED: load relation 'role' មកជាមួយ User ថ្មី
         ], 201);
     }
 
@@ -153,8 +156,8 @@ class UserController extends Controller
 
         return response()->json([
             'message' => 'User updated successfully',
-            'user' => $user->load('role')
-        ]);
+           'user' => $user->fresh()->load('role')
+        ],200);
     }
 
 
@@ -168,11 +171,13 @@ class UserController extends Controller
                 'message' => 'User not found'
             ], 404);
         }
-
+if ($user->profile) {
+            Storage::disk('public')->delete($user->profile);
+        }
         $user->delete();
 
         return response()->json([
             'message' => 'User deleted successfully'
-        ]);
+        ],200);
     }
 }

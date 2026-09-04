@@ -16,6 +16,7 @@ class BudgetCategory extends Model
         'limit_amount',
         'alert_percentage',
         'rollover_amount',
+         'rollover_enabled',
     ];
 
     public function budget()
