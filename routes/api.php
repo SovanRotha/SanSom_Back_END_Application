@@ -87,7 +87,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/budgetCategories', [BudgetCategoryController::class, 'index']);
+    Route::get('/budgetCategories/{budgetId}', [BudgetCategoryController::class, 'index']);
     Route::post('/budgetCategories', [BudgetCategoryController::class, 'store']);
     Route::get('/budgetCategories/{id}', [BudgetCategoryController::class, 'show']);
     Route::put('/budgetCategories/{id}', [BudgetCategoryController::class, 'update']);
