@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Category;
 
 use App\Http\Controllers\Controller;
-use App\Models\Account;
+use App\Models\Account\Account;
 use App\Models\Budget\Budget;
 use App\Models\Budget\BudgetCategory;
 use App\Models\Category\Category;

@@ -2,7 +2,7 @@
 
 namespace App\Models\Bill;
 
-use App\Models\Account;
+use App\Models\Account\Account;
 use App\Models\Category\Category;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class RecurringTransaction extends Model
 {
-    use HasFactory ,SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'user_id',

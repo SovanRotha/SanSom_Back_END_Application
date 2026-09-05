@@ -15,13 +15,13 @@ class BudgetController extends Controller
 
         $budget = Budget::where('user_id', $user->id)->with('budgetCategory.category')->latest('month')->get();
 
-         return response()->json([
+        return response()->json([
             'message' => 'Budgets retrieved successfully',
             'budgets' => $budget
         ]);
     }
 
-     public function show(Request $request, $id)
+    public function show(Request $request, $id)
     {
         $user = $request->user();
 
@@ -42,11 +42,11 @@ class BudgetController extends Controller
         ]);
     }
 
-    public function store(Request $request, $id)
+    public function store(Request $request)
     {
         $user = $request->user();
 
-         $validated = $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:100',
 
             'month' => ['required', 'date_format:Y-m-d',],
@@ -86,7 +86,7 @@ class BudgetController extends Controller
 
     public function update(Request $request, $id)
     {
-         $user = $request->user();
+        $user = $request->user();
 
         $budget = Budget::where('id', $id)
             ->where('user_id', $user->id)
@@ -101,7 +101,7 @@ class BudgetController extends Controller
         $validated = $request->validate([
             'name' => 'sometimes|string|max:100',
 
-            'month' => ['sometimes','date_format:Y-m-d',],
+            'month' => ['sometimes', 'date_format:Y-m-d',],
 
             'total_limit' => 'sometimes|numeric|min:0',
 
@@ -121,7 +121,7 @@ class BudgetController extends Controller
 
     public function destroy(Request $request, $id)
     {
-         $user = $request->user();
+        $user = $request->user();
 
         $budget = Budget::where('id', $id)
             ->where('user_id', $user->id)
@@ -132,12 +132,11 @@ class BudgetController extends Controller
                 'message' => 'Budget not found'
             ], 404);
         }
-         $budget->delete();
+        $budget->delete();
 
 
         return response()->json([
             'message' => 'Budget deleted successfully'
         ]);
     }
-
 }

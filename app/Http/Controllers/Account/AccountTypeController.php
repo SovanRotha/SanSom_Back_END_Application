@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\AccountController;
+namespace App\Http\Controllers\Account;
 
 use App\Http\Controllers\Controller;
 use App\Models\Account\AccountType;

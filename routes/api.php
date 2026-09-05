@@ -63,36 +63,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/accounts/{id}', [AccountController::class, 'destroy']);
 });
 
-Route::get('/bills', [BillController::class, 'index']);
-Route::get('/bills/{id}', [BillController::class, 'show']);
-Route::post('/bills', [BillController::class, 'store']);
-Route::put('/bills/{id}', [BillController::class, 'update']);
-Route::delete('/bills/{id}', [BillController::class, 'destroy']);
-
-Route::get('/recurrings', [RecurringTransactionController::class, 'index']);
-Route::get('/recurrings/{id}', [RecurringTransactionController::class, 'show']);
-Route::post('/recurrings', [RecurringTransactionController::class, 'store']);
-Route::put('/recurrings/{id}', [RecurringTransactionController::class, 'update']);
-Route::delete('/recurrings/{id}', [RecurringTransactionController::class, 'destroy']);
-
-Route::get('/subscriptions', [SubscriptionController::class, 'index']);
-Route::get('/subscriptions/{id}', [SubscriptionController::class, 'show']);
-Route::put('/subscriptions/{id}', [SubscriptionController::class, 'update']);
-Route::delete('/subscriptions/{id}', [SubscriptionController::class, 'destroy']);
-Route::post('/subscriptions', [SubscriptionController::class, 'store']);
-
-Route::get('/budgets', [BudgetController::class, 'index']);
-Route::post('/budgets', [BudgetController::class, 'store']);
-Route::put('/budgets/{id}', [BudgetController::class, 'update']);
-Route::delete('/budgets/{id}', [BudgetController::class, 'destroy']);
-Route::get('/budgets/{id}', [BudgetController::class, 'show']);
-
-Route::get('/budgetCategories', [BudgetCategoryController::class, 'index']);
-Route::get('/budgetCategories/{id}', [BudgetCategoryController::class, 'show']);
-Route::post('/budgetCategories', [BudgetCategoryController::class, 'store']);
-Route::put('/budgetCategories/{id}', [BudgetCategoryController::class, 'update']);
-Route::delete('/budgetCategories/{id}', [BudgetCategoryController::class, 'destroy']);
-
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/categories', [CategoryController::class, 'index']);
     Route::get('/categories/{id}', [CategoryController::class, 'show']);
@@ -101,44 +71,98 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
 });
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/bills', [BillController::class, 'index']);
+    Route::get('/bills/{id}', [BillController::class, 'show']);
+    Route::post('/bills', [BillController::class, 'store']);
+    Route::put('/bills/{id}', [BillController::class, 'update']);
+    Route::delete('/bills/{id}', [BillController::class, 'destroy']);
+});
 
-Route::get('/transactions', [TransactionController::class, 'index']);
-Route::get('/transactions/{id}', [TransactionController::class, 'show']);
-Route::post('/transactions', [TransactionController::class, 'store']);
-Route::put('/transactions/{id}', [TransactionController::class, 'update']);
-Route::delete('/transactions/{id}', [TransactionController::class, 'destroy']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/recurrings', [RecurringTransactionController::class, 'index']);
+    Route::get('/recurrings/{id}', [RecurringTransactionController::class, 'show']);
+    Route::post('/recurrings', [RecurringTransactionController::class, 'store']);
+    Route::put('/recurrings/{id}', [RecurringTransactionController::class, 'update']);
+    Route::delete('/recurrings/{id}', [RecurringTransactionController::class, 'destroy']);
+});
 
-Route::get('/attachments', [TransactionAttachmentController::class, 'index']);
-Route::get('/attachments/{id}', [TransactionAttachmentController::class, 'show']);
-Route::post('/attachments', [TransactionAttachmentController::class, 'store']);
-// Route::put('/attachments/{id}', [TransactionAttachmentController::class, 'update']);
-Route::delete('/attachments/{id}', [TransactionAttachmentController::class, 'destroy']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/subscriptions', [SubscriptionController::class, 'index']);
+    Route::get('/subscriptions/{id}', [SubscriptionController::class, 'show']);
+    Route::put('/subscriptions/{id}', [SubscriptionController::class, 'update']);
+    Route::delete('/subscriptions/{id}', [SubscriptionController::class, 'destroy']);
+    Route::post('/subscriptions', [SubscriptionController::class, 'store']);
+});
 
-Route::get('/goals', [SavingGoalController::class, 'index']);
-Route::get('/goals/{id}', [SavingGoalController::class, 'show']);
-Route::post('/goals', [SavingGoalController::class, 'store']);
-Route::put('/goals/{id}', [SavingGoalController::class, 'update']);
-Route::delete('/goals/{id}', [SavingGoalController::class, 'destroy']);
-Route::post('/goals/{id}/add-money', [SavingGoalController::class, 'addMoney']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/budgets', [BudgetController::class, 'index']);
+    Route::post('/budgets', [BudgetController::class, 'store']);
+    Route::put('/budgets/{id}', [BudgetController::class, 'update']);
+    Route::delete('/budgets/{id}', [BudgetController::class, 'destroy']);
+    Route::get('/budgets/{id}', [BudgetController::class, 'show']);
+});
 
-Route::get('/contributions', [SavingContributionController::class, 'index']);
-Route::get('/contributions/{id}', [SavingContributionController::class, 'show']);
-Route::post('/contributions', [SavingContributionController::class, 'store']);
-Route::put('/contributions/{id}', [SavingContributionController::class, 'update']);
-Route::delete('/contributions/{id}', [SavingContributionController::class, 'destroy']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/budgetCategories', [BudgetCategoryController::class, 'index']);
+    Route::get('/budgetCategories/{id}', [BudgetCategoryController::class, 'show']);
+    Route::post('/budgetCategories', [BudgetCategoryController::class, 'store']);
+    Route::put('/budgetCategories/{id}', [BudgetCategoryController::class, 'update']);
+    Route::delete('/budgetCategories/{id}', [BudgetCategoryController::class, 'destroy']);
+});
 
-Route::get('/notifications', [NotificationController::class, 'index']);
-Route::get('/unread', [NotificationController::class, 'unread']);
-Route::get('/notifications/{id}', [NotificationController::class, 'show']);
-Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
-Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
-Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']);
-Route::delete('/notifications', [NotificationController::class, 'destroyAll']);
+
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/transactions', [TransactionController::class, 'index']);
+    Route::get('/transactions/{id}', [TransactionController::class, 'show']);
+    Route::post('/transactions', [TransactionController::class, 'store']);
+    Route::put('/transactions/{id}', [TransactionController::class, 'update']);
+    Route::delete('/transactions/{id}', [TransactionController::class, 'destroy']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/attachments', [TransactionAttachmentController::class, 'index']);
+    Route::get('/attachments/{id}', [TransactionAttachmentController::class, 'show']);
+    Route::post('/attachments', [TransactionAttachmentController::class, 'store']);
+    // Route::put('/attachments/{id}', [TransactionAttachmentController::class, 'update']);
+    Route::delete('/attachments/{id}', [TransactionAttachmentController::class, 'destroy']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/goals', [SavingGoalController::class, 'index']);
+    Route::get('/goals/{id}', [SavingGoalController::class, 'show']);
+    Route::post('/goals', [SavingGoalController::class, 'store']);
+    Route::put('/goals/{id}', [SavingGoalController::class, 'update']);
+    Route::delete('/goals/{id}', [SavingGoalController::class, 'destroy']);
+    Route::post('/goals/{id}/add-money', [SavingGoalController::class, 'addMoney']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/contributions', [SavingContributionController::class, 'index']);
+    Route::get('/contributions/{id}', [SavingContributionController::class, 'show']);
+    Route::post('/contributions', [SavingContributionController::class, 'store']);
+    Route::put('/contributions/{id}', [SavingContributionController::class, 'update']);
+    Route::delete('/contributions/{id}', [SavingContributionController::class, 'destroy']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/unread', [NotificationController::class, 'unread']);
+    Route::get('/notifications/{id}', [NotificationController::class, 'show']);
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+    Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']);
+    Route::delete('/notifications', [NotificationController::class, 'destroyAll']);
+});
 
 // have to do service to alert the message into the notification 
 // NotificationService
 
 Route::get('/ai/test', [AITestController::class, 'test']);
 
-Route::post('/conversations', [AIConversationController::class, 'createConversation']);
-Route::post('/conversation/{id}/messages', [AIConversationController::class, 'sendMessage']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/conversations', [AIConversationController::class, 'createConversation']);
+    Route::post('/conversation/{id}/messages', [AIConversationController::class, 'sendMessage']);
+});

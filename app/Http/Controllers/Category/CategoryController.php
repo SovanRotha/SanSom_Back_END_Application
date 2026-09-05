@@ -30,7 +30,7 @@ class CategoryController extends Controller
             $categories = ModelsCategory::where('status', 'active')
                 ->where(function ($query) use ($user) {
                     $query->where('is_system', true)
-                          ->orWhere('user_id', $user->id);
+                        ->orWhere('user_id', $user->id);
                 })
                 ->with('children')
                 ->get();
@@ -66,7 +66,7 @@ class CategoryController extends Controller
                 ->where('status', 'active')
                 ->where(function ($query) use ($user) {
                     $query->where('is_system', true)
-                          ->orWhere('user_id', $user->id);
+                        ->orWhere('user_id', $user->id);
                 })
                 ->with('parent', 'children')
                 ->first();
@@ -127,7 +127,7 @@ class CategoryController extends Controller
                     ->where('status', 'active')
                     ->where(function ($query) use ($user) {
                         $query->where('is_system', true)
-                              ->orWhere('user_id', $user->id);
+                            ->orWhere('user_id', $user->id);
                     })
                     ->first();
 
@@ -250,7 +250,7 @@ class CategoryController extends Controller
                     ->where('status', 'active')
                     ->where(function ($query) use ($user) {
                         $query->where('is_system', true)
-                              ->orWhere('user_id', $user->id);
+                            ->orWhere('user_id', $user->id);
                     })
                     ->first();
 

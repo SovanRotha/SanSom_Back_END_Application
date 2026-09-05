@@ -55,7 +55,7 @@ class SubscriptionController extends Controller
         $validated = $request->validate([
             'account_id' => 'required|exists:accounts,id',
 
-            'category_id' => 'required|exists:categories,id',
+            'category_id' => 'nullable|exists:categories,id',
 
             'name' => 'required|string|max:100',
 
@@ -63,7 +63,7 @@ class SubscriptionController extends Controller
 
             'billing_cycle' => 'required|in:daily,weekly,monthly,yearly',
 
-            'next_payment_date' => 'required|date',
+            'next_payment_date' => 'nullable|date',
 
             'start_date' => 'required|date',
 
@@ -85,14 +85,17 @@ class SubscriptionController extends Controller
         }
 
 
+        // Default next_payment_date to start_date if not provided
+        $nextPaymentDate = $validated['next_payment_date'] ?? $validated['start_date'];
+
         $subscription = Subscription::create([
             'user_id' => $user->id,
             'account_id' => $validated['account_id'],
-            'category_id' => $validated['category_id'],
+            'category_id' => $validated['category_id'] ?? null,
             'name' => $validated['name'],
             'amount' => $validated['amount'],
             'billing_cycle' => $validated['billing_cycle'],
-            'next_payment_date' => $validated['next_payment_date'],
+            'next_payment_date' => $nextPaymentDate,
             'start_date' => $validated['start_date'],
             'end_date' => $validated['end_date'] ?? null,
             'status' => $validated['status'] ?? 'active',
@@ -124,7 +127,7 @@ class SubscriptionController extends Controller
         $validated = $request->validate([
             'account_id' => 'sometimes|exists:accounts,id',
 
-            'category_id' => 'sometimes|exists:categories,id',
+            'category_id' => 'nullable|exists:categories,id',
 
             'name' => 'sometimes|string|max:100',
 

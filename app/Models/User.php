@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Models\Account\Account;
 use App\Models\Bill\Bill;
 use App\Models\Bill\RecurringTransaction;
 use App\Models\Budget\Budget;
@@ -61,6 +62,11 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    public function accounts()
+    {
+        return $this->hasMany(Account::class);
     }
 
     public function category()

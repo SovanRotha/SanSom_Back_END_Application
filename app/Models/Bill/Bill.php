@@ -2,7 +2,7 @@
 
 namespace App\Models\Bill;
 
-use App\Models\Account;
+use App\Models\Account\Account;
 use App\Models\Category\Category;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

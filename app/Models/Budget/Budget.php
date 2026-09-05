@@ -26,5 +26,8 @@ class Budget extends Model
         return $this->belongsTo(User::class);
     }
 
-    
+    public function budgetCategory()
+    {
+        return $this->hasMany(BudgetCategory::class);
+    }
 }

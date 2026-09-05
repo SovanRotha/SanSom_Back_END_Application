@@ -2,7 +2,7 @@
 
 namespace App\Models\Category;
 
-use App\Models\Account;
+use App\Models\Account\Account;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -44,5 +44,4 @@ class Transaction extends Model
     {
         return $this->hasMany(TransactionAttachment::class);
     }
-
 }
