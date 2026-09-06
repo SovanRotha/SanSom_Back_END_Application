@@ -94,6 +94,7 @@ class AIConversationController extends Controller
 
         return response()->json([
             'message' => 'Conversation created successfully',
+            'conversation_id' => $conversation->id,
             'conversation' => $conversation,
         ], 201);
     }

@@ -113,7 +113,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/ai/test', [AITestController::class, 'test']);
 
     Route::post('/conversations', [AIConversationController::class, 'createConversation']);
-    Route::post('/conversation/{id}/messages', [AIConversationController::class, 'sendMessage']);
+    Route::post('/conversations/{conversationId}/messages', [AIConversationController::class, 'sendMessage']);
+    Route::post('/conversation/{conversationId}/messages', [AIConversationController::class, 'sendMessage']);
 
     Route::get('/budgets', [BudgetController::class, 'index']);
     Route::post('/budgets', [BudgetController::class, 'store']);

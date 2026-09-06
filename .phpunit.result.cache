@@ -1,0 +1,1 @@
+{"version":2,"defects":{"Tests\\Feature\\CategoryAuthTest::test_guest_cannot_fetch_categories":7},"times":{"Tests\\Unit\\ExampleTest::test_that_true_is_true":0.008,"Tests\\Feature\\CategoryAuthTest::test_guest_cannot_fetch_categories":0.05,"Tests\\Feature\\ExampleTest::test_the_application_returns_a_successful_response":0.028}}

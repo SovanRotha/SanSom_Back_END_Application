@@ -3,6 +3,7 @@
 namespace App\Models\Bill;
 
 use App\Models\Account;
+use App\Models\Account\Account as ModelsAccount;
 use App\Models\Category\Category;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -35,7 +36,7 @@ class RecurringTransaction extends Model
 
     public function account()
     {
-        return $this->belongsTo(Account::class);
+        return $this->belongsTo(ModelsAccount::class);
     }
 
     public function category()

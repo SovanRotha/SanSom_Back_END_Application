@@ -11,6 +11,7 @@ use App\Models\Category\Category;
 use App\Models\Category\Transaction;
 use App\Services\Notification\NotificationService;
 use App\Services\Notification\Notification\BudgetNotificationService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -26,7 +27,7 @@ class TransactionController extends Controller
 
         return response()->json([
             "Message" => "Transaction retrieved Successfully",
-            "transaction" => $transaction
+            "transactions" => $transaction
         ]);
     }
 
@@ -36,11 +37,11 @@ class TransactionController extends Controller
 
         return response()->json([
             "Message" => "Transaction retrieved Successfully",
-            "transaction" => $transaction
+            "transactions" => $transaction
         ]);
     }
 
-    public function store(Request $request, $id)
+    public function store(Request $request)
     {
         $user = $request->user();
 
@@ -119,7 +120,7 @@ class TransactionController extends Controller
         // ], 422);
         // }
 
-        $transaction = DB::transaction(function () use ($user, $account, $validated, $id) {
+        $transaction = DB::transaction(function () use ($user, $account, $validated) {
             $transaction = Transaction::create([
                 "user_id" => $user->id,
                 'account_id' => $account->id,
@@ -150,17 +151,9 @@ class TransactionController extends Controller
         if ($transaction->type === 'expense') {
 
             // Find the user's active budget
+            $transactionDate = Carbon::parse($transaction->transaction_date);
             $budget = Budget::where('user_id', $user->id)
-                ->whereDate(
-                    'start_date',
-                    '<=',
-                    $transaction->transaction_date
-                )
-                ->whereDate(
-                    'end_date',
-                    '>=',
-                    $transaction->transaction_date
-                )
+                ->where('month', 'like', $transactionDate->format('Y-m-') . '%')
                 ->first();
 
             if ($budget) {
@@ -194,8 +187,8 @@ class TransactionController extends Controller
                         ->whereBetween(
                             'transaction_date',
                             [
-                                $budget->start_date,
-                                $budget->end_date
+                                $transactionDate->copy()->startOfMonth(),
+                                $transactionDate->copy()->endOfMonth()
                             ]
                         )
                         ->sum('amount');
@@ -211,7 +204,7 @@ class TransactionController extends Controller
 
         return response()->json([
             'Message' => 'Transaction created Successfully',
-            'transaction' => $transaction
+            'transactions' => $transaction
         ]);
     }
 
@@ -338,7 +331,7 @@ class TransactionController extends Controller
 
         return response()->json([
             'Message' => 'Transaction updated Successfully',
-            'transaction' => $transaction->fresh(),
+            'transactions' => $transaction->fresh(),
         ]);
     }
 }

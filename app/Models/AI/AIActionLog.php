@@ -10,6 +10,8 @@ class AIActionLog extends Model
 {
     use HasFactory;
 
+    protected $table = 'ai_action_logs';
+
     protected $fillable = [
         'user_id',
         'conversation_id',
@@ -29,11 +31,11 @@ class AIActionLog extends Model
 
     public function conversation()
     {
-        return $this->belongsTo(AIConversation::class);
+        return $this->belongsTo(AIConversation::class, 'conversation_id');
     }
 
     public function message()
     {
-        return $this->belongsTo(AIMessage::class);
+        return $this->belongsTo(AIMessage::class, 'message_id');
     }
 }

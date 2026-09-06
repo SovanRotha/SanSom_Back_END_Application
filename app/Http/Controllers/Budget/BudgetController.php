@@ -154,7 +154,7 @@ class BudgetController extends Controller
 
             return response()->json([
                 'message' => 'Budget updated successfully',
-                'budgets' => $budget->fresh()
+                'budgetsx' => $budget->fresh()
             ]);
         } catch (\Throwable $e) {
             return response()->json([

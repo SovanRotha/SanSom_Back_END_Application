@@ -10,6 +10,8 @@ class AIMessage extends Model
 {
     use HasFactory;
 
+    protected $table = 'ai_messages';
+
     protected $fillable = [
         'conversation_id',
         'role',
@@ -25,12 +27,12 @@ class AIMessage extends Model
 
     public function conversation()
     {
-        return $this->belongsTo(AIConversation::class);
+        return $this->belongsTo(AIConversation::class, 'conversation_id');
     }
 
     public function actionLog()
     {
-        return $this->hasMany(AIActionLog::class);
+        return $this->hasMany(AIActionLog::class, 'message_id');
     }
 
     

@@ -2,8 +2,7 @@
 
 namespace App\Services\Notification;
 
-
-use App\Models\Notification\Notification ;
+use App\Models\Notification\Notification;
 
 class NotificationService
 {
@@ -22,5 +21,4 @@ class NotificationService
             'data' => $data,
         ]);
     }
-
 }
