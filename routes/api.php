@@ -53,6 +53,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/accounts/{id}', [AccountController::class, 'show']);
     Route::post('/accounts', [AccountController::class, 'store']);
     Route::put('/accounts/{id}', [AccountController::class, 'update']);
+    Route::patch('/accounts/{id}/deactivate', [AccountController::class, 'deactivate']);
     Route::delete('/accounts/{id}', [AccountController::class, 'destroy']);
 
     Route::get('/accountTypes', [AccountType::class, 'index']);

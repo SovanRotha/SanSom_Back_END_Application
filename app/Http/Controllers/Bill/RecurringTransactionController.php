@@ -45,7 +45,7 @@ class RecurringTransactionController extends Controller
 
         return response()->json([
             'message' => 'Recurring transaction retrieved successfully',
-            'recurring_transaction' => $recurringTransaction
+            'recurring_transactions' => $recurringTransaction
         ]);
     }
 
@@ -70,7 +70,7 @@ class RecurringTransactionController extends Controller
 
             'end_date' => 'nullable|date|after_or_equal:start_date',
 
-            'next_date' => 'required|date',
+            // 'next_date' => 'required|date',
 
             'auto_create' => 'sometimes|boolean',
 
@@ -100,14 +100,14 @@ class RecurringTransactionController extends Controller
             'frequency' => $validated['frequency'],
             'start_date' => $validated['start_date'],
             'end_date' => $validated['end_date'] ?? null,
-            'next_date' => $validated['next_date'],
+            // 'next_date' => $validated['next_date'],
             'auto_create' => $validated['auto_create'] ?? true,
             'status' => $validated['status'] ?? 'active',
         ]);
 
         return response()->json([
             'message' => 'Recurring transaction created successfully',
-            'recurring_transaction' =>
+            'recurring_transactions' =>
                 $recurringTransaction->load(['account', 'category'])
         ], 201);
     }
@@ -144,7 +144,7 @@ class RecurringTransactionController extends Controller
 
             'end_date' => 'nullable|date',
 
-            'next_date' => 'sometimes|date',
+            // 'next_date' => 'sometimes|date',
 
             'auto_create' => 'sometimes|boolean',
 
@@ -170,7 +170,7 @@ class RecurringTransactionController extends Controller
 
         return response()->json([
             'message' => 'Recurring transaction updated successfully',
-            'recurring_transaction' =>
+            'recurring_transactions' =>
                 $recurringTransaction->fresh()->load([
                     'account',
                     'category'

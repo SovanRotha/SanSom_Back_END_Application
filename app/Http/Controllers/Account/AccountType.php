@@ -16,7 +16,7 @@ class AccountType extends Controller
 
         return response()->json([
             'message' => 'Account Types Retrieved Successfully',
-            'accountType' => $accountType,
+            'accountTypes' => $accountType,
         ], 200);
     }
 
@@ -33,7 +33,7 @@ class AccountType extends Controller
 
         return response()->json([
             'message' => 'Account Type Retrieved Successfully',
-            'accountType' => $accountType,
+            'accountTypes' => $accountType,
         ], 200);
     }
 
@@ -49,7 +49,7 @@ class AccountType extends Controller
 
         return response()->json([
             'message' => 'Account Type Created Successfully',
-            'accountType' => $accountType,
+            'accountTypes' => $accountType,
         ], 201);
     }
 
@@ -73,7 +73,7 @@ class AccountType extends Controller
 
         return response()->json([
             'message' => 'Account Type Updated Successfully',
-            'accountType' => $accountType,
+            'accountTypes' => $accountType,
         ], 200);
     }
 

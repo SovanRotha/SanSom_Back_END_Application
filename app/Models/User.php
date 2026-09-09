@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Models\Account\Account;
 use App\Models\Bill\Bill;
 use App\Models\Bill\RecurringTransaction;
 use App\Models\Budget\Budget;
@@ -11,6 +12,7 @@ use App\Models\Category\Category;
 use App\Models\Category\Transaction;
 use App\Models\Saving\SavingGoal;
 use App\Models\User\Role;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -61,6 +63,11 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    public function accounts(): HasMany
+    {
+        return $this->hasMany(Account::class);
     }
 
     public function category()

@@ -47,7 +47,7 @@ class AccountController extends Controller
 
         return response()->json([
             'message' => 'Account retrieved successfully',
-            'account' => $account,
+            'accounts' => $account,
         ]);
     }
 
@@ -85,7 +85,7 @@ class AccountController extends Controller
 
         return response()->json([
             'message' => 'Account created successfully',
-            'account' => $account->load('accountType'),
+            'accounts' => $account->load('accountType'),
         ], 201);
     }
 
@@ -118,7 +118,31 @@ class AccountController extends Controller
 
         return response()->json([
             'message' => 'Account updated successfully',
-            'account' => $account->fresh()->load('accountType'),
+            'accounts' => $account->fresh()->load('accountType'),
+        ]);
+    }
+
+    public function deactivate(Request $request, $id)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
+        $account = ModelsAccount::where('id', $id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (!$account) {
+            return response()->json(['message' => 'Account not found'], 404);
+        }
+
+        $account->update(['status' => 'inactive']);
+
+        return response()->json([
+            'message' => 'Account deactivated successfully',
+            'accounts' => $account->fresh()->load('accountType'),
         ]);
     }
 

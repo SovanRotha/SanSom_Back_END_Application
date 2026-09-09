@@ -44,7 +44,7 @@ class SubscriptionController extends Controller
 
         return response()->json([
             'message' => 'Subscription retrieved successfully',
-            'subscription' => $subscription
+            'subscriptions' => $subscription
         ]);
     }
 
@@ -63,7 +63,7 @@ class SubscriptionController extends Controller
 
             'billing_cycle' => 'required|in:daily,weekly,monthly,yearly',
 
-            'next_payment_date' => 'required|date',
+            'next_payment_date' => 'nullable|date',
 
             'start_date' => 'required|date',
 
@@ -101,7 +101,7 @@ class SubscriptionController extends Controller
 
         return response()->json([
             'message' => 'Subscription created successfully',
-            'subscription' =>
+            'subscriptions' =>
             $subscription->load(['account', 'category'])
         ], 201);
     }
@@ -132,7 +132,7 @@ class SubscriptionController extends Controller
 
             'billing_cycle' => 'sometimes|in:daily,weekly,monthly,yearly',
 
-            'next_payment_date' => 'sometimes|date',
+            'next_payment_date' => 'nullable|date',
 
             'start_date' => 'sometimes|date',
 
@@ -160,7 +160,7 @@ class SubscriptionController extends Controller
 
         return response()->json([
             'message' => 'Subscription updated successfully',
-            'subscription' =>
+            'subscriptions' =>
             $subscription->fresh()->load([
                 'account',
                 'category'

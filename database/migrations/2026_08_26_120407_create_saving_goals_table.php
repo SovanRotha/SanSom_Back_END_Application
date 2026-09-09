@@ -21,7 +21,7 @@ return new class extends Migration
             $table->date('target_date')->nullable();
             $table->string('icon')->nullable();
             $table->string('color')->nullable();
-            $table->boolean('auto-allocate')->nullable();
+            $table->boolean('auto_allocate')->nullable();
             $table->decimal('allocation_percentage', 15,2)->nullable();
             $table->string('status');
             $table->timestamps();

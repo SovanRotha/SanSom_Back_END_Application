@@ -24,7 +24,7 @@ class SavingGoalController extends Controller
 
         return response()->json([
             'message' => 'Savings goals retrieved successfully',
-            'savings_goals' => $goals
+            'savings_goal' => $goals
         ]);
     }
 
@@ -49,7 +49,7 @@ class SavingGoalController extends Controller
         ]);
     }
 
-    public function store(Request $request, $id)
+    public function store(Request $request)
     {
         $user = $request->user();
 

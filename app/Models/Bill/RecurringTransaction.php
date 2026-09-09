@@ -24,7 +24,6 @@ class RecurringTransaction extends Model
         'frequency',
         'start_date',
         'end_date',
-        'next_date',
         'auto_create',
         'status',
     ];
