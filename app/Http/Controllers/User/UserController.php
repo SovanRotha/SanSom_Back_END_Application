@@ -80,7 +80,7 @@ class UserController extends Controller
             'profile' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
 
             'currency' => [
-                'required',
+                'nullable',
                 Rule::in(['USD', 'KHR'])
             ],
 
