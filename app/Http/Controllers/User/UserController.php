@@ -37,10 +37,27 @@ class UserController extends Controller
 
         return response()->json([
             'message' => 'User retrieved successfully',
-            'user' => $user
+            'users' => $user
         ]);
     }
 
+    public function me()
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'User not authenticated'
+            ], 401);
+        }
+
+        $user = User::with('role')->find($user->id);
+
+        return response()->json([
+            'message' => 'Authenticated user retrieved successfully',
+            'users' => $user
+        ]);
+    }
 
     // Create user
     public function store(Request $request)
@@ -92,7 +109,7 @@ class UserController extends Controller
 
         return response()->json([
             'message' => 'User created successfully',
-            'user' => $user,
+            'users' => $user,
         ], 201);
     }
 
@@ -151,9 +168,11 @@ class UserController extends Controller
 
         $user->update($validated);
 
+        $user = User::with('role')->find($user->id);
+
         return response()->json([
             'message' => 'User updated successfully',
-            'user' => $user->load('role')
+            'users' => $user
         ]);
     }
 
@@ -175,4 +194,7 @@ class UserController extends Controller
             'message' => 'User deleted successfully'
         ]);
     }
+
+   
+    
 }

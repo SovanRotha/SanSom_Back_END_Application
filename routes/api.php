@@ -16,6 +16,7 @@ use App\Http\Controllers\Notification\NotificationController;
 use App\Http\Controllers\Saving\SavingContributionController;
 use App\Http\Controllers\Saving\SavingGoalController;
 use App\Http\Controllers\User\LoginController;
+use App\Http\Controllers\User\LogoutController;
 use App\Http\Controllers\User\RoleController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Http\Request;
@@ -39,14 +40,20 @@ use Illuminate\Support\Facades\Route;
 
 Route::apiResource('roles', RoleController::class);
 
-Route::get('/users', [UserController::class, 'index']);
-Route::get('/user/{id}', [UserController::class, 'show']);
-Route::put('/users/{id}', [UserController::class, 'update']);
-Route::delete('/users/{id}', [UserController::class, 'destroy']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/users', [UserController::class, 'index']);
+    Route::get('/user/{id}', [UserController::class, 'show']);
+    Route::put('/users/{id}', [UserController::class, 'update']);
+    Route::delete('/users/{id}', [UserController::class, 'destroy']);
+    Route::get('/me', [UserController::class, 'me']);
+});
+
+
 
 
 Route::post('/register', [UserController::class, 'store']);
 Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LogoutController::class, 'logout']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/accounts', [AccountController::class, 'index']);

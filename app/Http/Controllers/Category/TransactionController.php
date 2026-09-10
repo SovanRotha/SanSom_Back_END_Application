@@ -20,23 +20,36 @@ class TransactionController extends Controller
     //
 
     public function __construct(protected NotificationService $notificationService, protected BudgetNotificationService $budgetNotification) {}
-
-    public function index()
+    public function index(Request $request)
     {
-        $transaction = Transaction::with('user', 'account', 'category')->get();
+        $search = $request->query('search');
+
+        $transactions = Transaction::with('user', 'account', 'category')
+            ->when($search, function ($query) use ($search) {
+                $query->where('description', 'like', "%{$search}%")
+                    ->orWhereHas('account', function ($query) use ($search) {
+                        $query->where('account_name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('category', function ($query) use ($search) {
+                        $query->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('user', function ($query) use ($search) {
+                        $query->where('name', 'like', "%{$search}%");
+                    });
+            })
+            ->get();
 
         return response()->json([
-            "Message" => "Transaction retrieved Successfully",
-            "transactions" => $transaction
+            "message" => "Transactions retrieved successfully",
+            "transactions" => $transactions
         ]);
     }
-
     public function show($id)
     {
         $transaction = Transaction::with('user', 'account', 'category')->find($id);
 
         return response()->json([
-            "Message" => "Transaction retrieved Successfully",
+            "message" => "Transaction retrieved successfully",
             "transactions" => $transaction
         ]);
     }

@@ -108,6 +108,7 @@ class AccountController extends Controller
         $validated = $request->validate([
             'account_type_id' => 'sometimes|exists:account_types,id',
             'name' => 'sometimes|string|max:100',
+            'balance' => 'sometimes|numeric|min:0',
             'currency' => 'sometimes|string|max:10',
             'icon' => 'nullable|string|max:100',
             'color' => 'nullable|string|max:20',
