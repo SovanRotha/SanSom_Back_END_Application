@@ -40,6 +40,7 @@ class User extends Authenticatable
         "deleted_at",
         "email_verified_at",
         "google_id",
+        "fcm_token"
     ];
 
     /**

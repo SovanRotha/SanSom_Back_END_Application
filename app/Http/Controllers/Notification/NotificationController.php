@@ -9,14 +9,14 @@ use Illuminate\Http\Request;
 class NotificationController extends Controller
 {
     //
-     public function index(Request $request)
+    public function index(Request $request)
     {
         $notifications = Notification::where(
             'user_id',
             $request->user()->id
         )
-        ->latest()
-        ->get();
+            ->latest()
+            ->get();
 
         return response()->json([
             'message' => 'Notifications retrieved successfully',
@@ -30,9 +30,9 @@ class NotificationController extends Controller
             'user_id',
             $request->user()->id
         )
-        ->whereNull('read_at')
-        ->latest()
-        ->get();
+            ->whereNull('read_at')
+            ->latest()
+            ->get();
 
         return response()->json([
             'message' => 'Unread notifications retrieved successfully',
@@ -46,11 +46,11 @@ class NotificationController extends Controller
             'id',
             $id
         )
-        ->where(
-            'user_id',
-            $request->user()->id
-        )
-        ->first();
+            ->where(
+                'user_id',
+                $request->user()->id
+            )
+            ->first();
 
         if (!$notification) {
             return response()->json([
@@ -70,11 +70,11 @@ class NotificationController extends Controller
             'id',
             $id
         )
-        ->where(
-            'user_id',
-            $request->user()->id
-        )
-        ->first();
+            ->where(
+                'user_id',
+                $request->user()->id
+            )
+            ->first();
 
         if (!$notification) {
             return response()->json([
@@ -98,10 +98,10 @@ class NotificationController extends Controller
             'user_id',
             $request->user()->id
         )
-        ->whereNull('read_at')
-        ->update([
-            'read_at' => now(),
-        ]);
+            ->whereNull('read_at')
+            ->update([
+                'read_at' => now(),
+            ]);
 
         return response()->json([
             'message' => 'All notifications marked as read',
@@ -114,11 +114,11 @@ class NotificationController extends Controller
             'id',
             $id
         )
-        ->where(
-            'user_id',
-            $request->user()->id
-        )
-        ->first();
+            ->where(
+                'user_id',
+                $request->user()->id
+            )
+            ->first();
 
         if (!$notification) {
             return response()->json([
@@ -144,8 +144,5 @@ class NotificationController extends Controller
             'message' => 'All notifications deleted successfully',
         ]);
     }
-
-
-
 
 }

@@ -161,59 +161,61 @@ class TransactionController extends Controller
             return $transaction;
         });
 
-        if ($transaction->type === 'expense') {
+        // if ($transaction->type === 'expense') {
 
-            // Find the user's active budget
-            $transactionDate = Carbon::parse($transaction->transaction_date);
-            $budget = Budget::where('user_id', $user->id)
-                ->where('month', 'like', $transactionDate->format('Y-m-') . '%')
-                ->first();
+        //     // Find the user's active budget
+        //     $transactionDate = Carbon::parse($transaction->transaction_date);
+        //     $budget = Budget::where('user_id', $user->id)
+        //         ->where('month', 'like', $transactionDate->format('Y-m-') . '%')
+        //         ->first();
 
-            if ($budget) {
+        //     if ($budget) {
 
-                // Find budget category
-                $budgetCategory = BudgetCategory::where(
-                    'budget_id',
-                    $budget->id
-                )
-                    ->where(
-                        'category_id',
-                        $transaction->category_id
-                    )
-                    ->first();
+        //         // Find budget category
+        //         $budgetCategory = BudgetCategory::where(
+        //             'budget_id',
+        //             $budget->id
+        //         )
+        //             ->where(
+        //                 'category_id',
+        //                 $transaction->category_id
+        //             )
+        //             ->first();
 
-                if ($budgetCategory) {
+        //         if ($budgetCategory) {
 
-                    // Calculate total spending
-                    $spent = Transaction::where(
-                        'user_id',
-                        $user->id
-                    )
-                        ->where(
-                            'category_id',
-                            $transaction->category_id
-                        )
-                        ->where(
-                            'type',
-                            'expense'
-                        )
-                        ->whereBetween(
-                            'transaction_date',
-                            [
-                                $transactionDate->copy()->startOfMonth(),
-                                $transactionDate->copy()->endOfMonth()
-                            ]
-                        )
-                        ->sum('amount');
+        //             // Calculate total spending
+        //             $spent = Transaction::where(
+        //                 'user_id',
+        //                 $user->id
+        //             )
+        //                 ->where(
+        //                     'category_id',
+        //                     $transaction->category_id
+        //                 )
+        //                 ->where(
+        //                     'type',
+        //                     'expense'
+        //                 )
+        //                 ->whereBetween(
+        //                     'transaction_date',
+        //                     [
+        //                         $transactionDate->copy()->startOfMonth(),
+        //                         $transactionDate->copy()->endOfMonth()
+        //                     ]
+        //                 )
+        //                 ->sum('amount');
 
-                    // Send to BudgetNotificationService
-                    $this->budgetNotification->checkBudget(
-                        $budgetCategory,
-                        (float) $spent
-                    );
-                }
-            }
-        }
+        //             // Send to BudgetNotificationService
+        //             $this->budgetNotification->checkBudget(
+        //                 $budgetCategory,
+        //                 (float) $spent
+        //             );
+        //         }
+        //     }
+        // }
+         $this->checkBudgetNotification($transaction, $user->id);
+
 
         return response()->json([
             'Message' => 'Transaction created Successfully',

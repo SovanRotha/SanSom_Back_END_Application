@@ -12,6 +12,7 @@ use App\Http\Controllers\Budget\BudgetController;
 use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Category\TransactionAttachmentController;
 use App\Http\Controllers\Category\TransactionController;
+use App\Http\Controllers\Notification\FCMTokenController;
 use App\Http\Controllers\Notification\NotificationController;
 use App\Http\Controllers\Saving\SavingContributionController;
 use App\Http\Controllers\Saving\SavingGoalController;
@@ -20,6 +21,7 @@ use App\Http\Controllers\User\LoginController;
 use App\Http\Controllers\User\LogoutController;
 use App\Http\Controllers\User\RoleController;
 use App\Http\Controllers\User\UserController;
+use App\Services\Notification\FirebaseNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -50,6 +52,19 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
+Route::get('/test-fcm', function () {
+
+    $service = app(FirebaseNotificationService::class);
+
+    return $service->send(
+        'cFemVkrhTLOBDF5RKuRkQu:APA91bFrWOGqHE6-WbVEwMMmzPeEBgX8c5f_aBdwm0QZ8udg2l9IbavZXzX_FRKIgDvU0fn4jaX9h4T3HwPZdGGuf-sIH-cHPYMB7lRfe5fbkryvGot1N3w',
+        'SanSom Test',
+        'Firebase push notification is working!',
+        [
+            'type' => 'test',
+        ]
+    );
+});
 
 
 Route::post('/register', [UserController::class, 'store']);
@@ -117,6 +132,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']);
     Route::delete('/notifications', [NotificationController::class, 'destroyAll']);
+    Route::post('/notifications/fcm-token', [FCMTokenController::class, 'store']);
 
     // have to do service to alert the message into the notification 
     // NotificationService

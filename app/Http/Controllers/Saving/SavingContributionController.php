@@ -6,11 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Models\Category\Transaction;
 use App\Models\Saving\SavingContribution;
 use App\Models\Saving\SavingGoal;
+use App\Services\Notification\Notification\SavingNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class SavingContributionController extends Controller
 {
+    public function __construct(
+        protected SavingNotificationService $savingNotificationService
+    ) {}
+
     /**
      * Get all saving contributions for the authenticated user.
      */
@@ -88,6 +93,8 @@ class SavingContributionController extends Controller
             ], 404);
         }
 
+        $previousAmount = (float) $goal->current_amount;
+
         /*
         |--------------------------------------------------------------------------
         | Check Transaction Ownership
@@ -126,7 +133,11 @@ class SavingContributionController extends Controller
             | Add contribution amount to saving goal
             */
 
-            $goal->increment('current_amount', $validated['amount']);
+            $goal->current_amount = min(
+                (float) $goal->current_amount + (float) $validated['amount'],
+                (float) $goal->target_amount
+            );
+            $goal->save();
 
             /*
             | Check if goal is completed
@@ -143,10 +154,18 @@ class SavingContributionController extends Controller
             return $contribution;
         });
 
+        $goal = $goal->fresh();
+
+        $this->savingNotificationService->checkSaving(
+            $goal,
+            $previousAmount,
+            (float) $goal->current_amount
+        );
+
         return response()->json([
             'message' => 'Savings contribution added successfully',
             'contributions' => $contribution->load('transaction'),
-            'savings_goal' => $goal->fresh(),
+            'savings_goal' => $goal,
         ], 201);
     }
 
@@ -176,6 +195,7 @@ class SavingContributionController extends Controller
         }
 
         $goal = $contribution->savingGoal;
+        $previousAmount = (float) $goal->current_amount;
 
         /*
         |--------------------------------------------------------------------------
@@ -252,10 +272,18 @@ class SavingContributionController extends Controller
             }
         });
 
+        $goal = $goal->fresh();
+
+        $this->savingNotificationService->checkSaving(
+            $goal,
+            $previousAmount,
+            (float) $goal->current_amount
+        );
+
         return response()->json([
             'message' => 'Contribution updated successfully',
             'contributions' => $contribution->fresh()->load('transaction'),
-            'savings_goal' => $goal->fresh(),
+            'savings_goal' => $goal,
         ]);
     }
 

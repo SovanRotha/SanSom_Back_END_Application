@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
-              $table->string('google_id')->nullable()->unique();
-              
+            $table->string('fcm_token')->nullable()->after('remember_token');
         });
     }
 
@@ -25,6 +24,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
+            $table->dropColumn('fcm_token');
         });
     }
 };
