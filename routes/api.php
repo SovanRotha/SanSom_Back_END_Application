@@ -15,6 +15,7 @@ use App\Http\Controllers\Category\TransactionController;
 use App\Http\Controllers\Notification\NotificationController;
 use App\Http\Controllers\Saving\SavingContributionController;
 use App\Http\Controllers\Saving\SavingGoalController;
+use App\Http\Controllers\User\GoogleSignInController;
 use App\Http\Controllers\User\LoginController;
 use App\Http\Controllers\User\LogoutController;
 use App\Http\Controllers\User\RoleController;
@@ -54,6 +55,8 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::post('/register', [UserController::class, 'store']);
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LogoutController::class, 'logout']);
+Route::post('/register-google', [GoogleSignInController::class, 'registerWithGoogle']);
+Route::post('/login-google', [GoogleSignInController::class, 'loginWithGoogle']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/accounts', [AccountController::class, 'index']);
