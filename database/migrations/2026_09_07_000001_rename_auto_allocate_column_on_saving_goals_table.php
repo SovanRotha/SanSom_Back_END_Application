@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('saving_goals', function (Blueprint $table) {
-            $table->renameColumn('auto-allocate', 'auto_allocate');
-        });
+        if (Schema::hasColumn('saving_goals', 'auto-allocate') && ! Schema::hasColumn('saving_goals', 'auto_allocate')) {
+            Schema::table('saving_goals', function (Blueprint $table) {
+                $table->renameColumn('auto-allocate', 'auto_allocate');
+            });
+        }
     }
 
     /**
@@ -21,8 +23,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('saving_goals', function (Blueprint $table) {
-            $table->renameColumn('auto_allocate', 'auto-allocate');
-        });
+        if (Schema::hasColumn('saving_goals', 'auto_allocate') && ! Schema::hasColumn('saving_goals', 'auto-allocate')) {
+            Schema::table('saving_goals', function (Blueprint $table) {
+                $table->renameColumn('auto_allocate', 'auto-allocate');
+            });
+        }
     }
 };
