@@ -214,13 +214,48 @@ class TransactionController extends Controller
         //         }
         //     }
         // }
-         $this->checkBudgetNotification($transaction, $user->id);
+        $this->checkBudgetNotification($transaction);
 
 
         return response()->json([
             'Message' => 'Transaction created Successfully',
             'transactions' => $transaction
         ]);
+    }
+
+    private function checkBudgetNotification(Transaction $transaction): void
+    {
+        if ($transaction->type !== 'expense') {
+            return;
+        }
+
+        $transactionDate = Carbon::parse($transaction->transaction_date);
+        $budget = Budget::where('user_id', $transaction->user_id)
+            ->where('month', 'like', $transactionDate->format('Y-m-') . '%')
+            ->first();
+
+        if (!$budget) {
+            return;
+        }
+
+        $budgetCategory = BudgetCategory::where('budget_id', $budget->id)
+            ->where('category_id', $transaction->category_id)
+            ->first();
+
+        if (!$budgetCategory) {
+            return;
+        }
+
+        $spent = Transaction::where('user_id', $transaction->user_id)
+            ->where('category_id', $transaction->category_id)
+            ->where('type', 'expense')
+            ->whereBetween('transaction_date', [
+                $transactionDate->copy()->startOfMonth(),
+                $transactionDate->copy()->endOfMonth(),
+            ])
+            ->sum('amount');
+
+        $this->budgetNotification->checkBudget($budgetCategory, (float) $spent);
     }
 
     public function destroy(Request $request, $id)
@@ -347,6 +382,48 @@ class TransactionController extends Controller
         return response()->json([
             'Message' => 'Transaction updated Successfully',
             'transactions' => $transaction->fresh(),
+        ]);
+    }
+
+    public function summary(Request $request)
+    {
+        $user = $request->user();
+
+        $income = Transaction::where('user_id', $user->id)->where('type', 'income')->where('status', 'completed')->sum('amount');
+
+        $expense = Transaction::where('user_id', $user->id)->where('type', 'expense')->where('status', 'completed')->sum('amount');
+
+        $net = $income - $expense;
+
+        return response()->json([
+            'income' => $income,
+            'expense' => $expense,
+            'net' => $net,
+        ]);
+    }
+
+    public function monthlySummary(Request $request)
+    {
+        $user = $request->user();
+
+        $monthlySummary = Transaction::where('user_id', $user->id)
+            ->where('status', 'completed')
+            ->selectRaw("
+            EXTRACT(YEAR FROM transaction_date)::integer as year,
+            EXTRACT(MONTH FROM transaction_date)::integer as month,
+            SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END) as income,
+            SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) as expense
+        ")
+            ->groupBy(
+                'year',
+                'month'
+            )
+            ->orderBy('year')
+            ->orderBy('month')
+            ->get();
+
+        return response()->json([
+            'monthly_summary' => $monthlySummary,
         ]);
     }
 }
