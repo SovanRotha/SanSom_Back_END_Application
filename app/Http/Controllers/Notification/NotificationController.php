@@ -60,7 +60,7 @@ class NotificationController extends Controller
 
         return response()->json([
             'message' => 'Notification retrieved successfully',
-            'notification' => $notification,
+            'notifications' => $notification,
         ]);
     }
 
@@ -88,7 +88,7 @@ class NotificationController extends Controller
 
         return response()->json([
             'message' => 'Notification marked as read',
-            'notification' => $notification,
+            'notifications' => $notification,
         ]);
     }
 
