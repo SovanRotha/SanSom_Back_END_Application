@@ -3,6 +3,7 @@
 namespace App\Services\Notification\Notification;
 
 use App\Models\Budget\BudgetCategory;
+use App\Models\Category\Transaction;
 use App\Models\Notification\Notification;
 use App\Services\Notification\NotificationService;
 
@@ -16,6 +17,7 @@ class BudgetNotificationService
         BudgetCategory $budgetCategory,
         float $spent
     ): ?Notification {
+
         $limit = (float) $budgetCategory->limit_amount;
 
         if ($limit <= 0) {
@@ -28,6 +30,7 @@ class BudgetNotificationService
         if ($percentage < $alertPercentage) {
             return null;
         }
+
 
         $alreadyNotified = Notification::where(
             'user_id',
@@ -59,6 +62,7 @@ class BudgetNotificationService
                 'limit' => $limit,
                 'percentage' => round($percentage, 2),
                 'alert_percentage' => $alertPercentage,
+                
             ]
         );
     }

@@ -168,8 +168,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/transactions', [TransactionController::class, 'store']);
     Route::put('/transactions/{id}', [TransactionController::class, 'update']);
     Route::delete('/transactions/{id}', [TransactionController::class, 'destroy']);
-
-
+    Route::get('transactions/budget-calculation', [TransactionController::class, 'budgetCalculation']);
 });
 
 
