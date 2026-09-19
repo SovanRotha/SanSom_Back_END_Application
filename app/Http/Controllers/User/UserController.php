@@ -13,17 +13,51 @@ use Illuminate\Validation\Rule;
 class UserController extends Controller
 {
     // Get all users
-    public function index()
+
+    public function index(Request $request)
     {
-        $users = User::with('role')->get();
+        $search = $request->query('search');
+
+        $users = User::select([
+                'id',
+                'name',
+                'email',
+                'role_id',
+                'status',
+                'created_at',
+                'updated_at',
+            ])
+            ->with('role')
+            // Aggregate total income from transactions
+            ->withSum(['transactions as total_income' => function ($query) {
+                $query->where('type', 'income')
+                    ->where('status', 'completed');
+            }], 'amount')
+            // Aggregate total expense from transactions
+            ->withSum(['transactions as total_expense' => function ($query) {
+                $query->where('type', 'expense')
+                    ->where('status', 'completed');
+            }], 'amount')
+            ->where('role_id', 2) // Normal users only
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'ILIKE', "%{$search}%")
+                        ->orWhere('email', 'ILIKE', "%{$search}%");
+                });
+            })
+            ->latest()
+            ->get();
+
+        $users->each(function (User $user) {
+            $user->total_income = (float) ($user->total_income ?? 0);
+            $user->total_expense = (float) ($user->total_expense ?? 0);
+        });
 
         return response()->json([
             'message' => 'Users retrieved successfully',
-            'users' => $users
+            'users' => $users,
         ]);
     }
-
-
     // Get one user
     public function show($id)
     {
@@ -65,7 +99,7 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:100',
 
-            
+
             'email' => [
                 'required',
                 'email',
@@ -127,7 +161,7 @@ class UserController extends Controller
 
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:100',
-            
+
             'email' => [
                 'sometimes',
                 'required',
@@ -194,7 +228,4 @@ class UserController extends Controller
             'message' => 'User deleted successfully'
         ]);
     }
-
-   
-    
 }

@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\Account\AccountController;
 use App\Http\Controllers\Account\AccountType;
+use App\Http\Controllers\Admin\AdminBudgetController;
+use App\Http\Controllers\Admin\AdminCategoryController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\AI\AIConversationController;
 use App\Http\Controllers\AI\AITestController;
 use App\Http\Controllers\Bill\BillController;
@@ -49,6 +52,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/users/{id}', [UserController::class, 'update']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
     Route::get('/me', [UserController::class, 'me']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/admin/dashboard', [DashboardController::class, 'dashboard']);
+
+    Route::get('/admin/categories', [AdminCategoryController::class, 'index']);
+    Route::post('/admin/categories', [AdminCategoryController::class, 'store']);
+    Route::get('/admin/categories/{id}', [AdminCategoryController::class, 'show']);
+    Route::put('/admin/categories/{id}', [AdminCategoryController::class, 'update']);
+    Route::delete('/admin/categories/{id}', [AdminCategoryController::class, 'destroy']);
+
+     Route::get('/admin/budgets/{id}',[AdminBudgetController::class, 'budgets']);
 });
 
 
