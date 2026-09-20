@@ -92,7 +92,7 @@ class SubscriptionController extends Controller
             'name' => $validated['name'],
             'amount' => $validated['amount'],
             'billing_cycle' => $validated['billing_cycle'],
-            'next_payment_date' => $validated['next_payment_date'],
+            'next_payment_date' => $validated['next_payment_date'] ?? null,
             'start_date' => $validated['start_date'],
             'end_date' => $validated['end_date'] ?? null,
             'status' => $validated['status'] ?? 'active',
